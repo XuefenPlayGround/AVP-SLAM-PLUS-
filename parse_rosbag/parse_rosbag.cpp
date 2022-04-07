@@ -45,11 +45,11 @@ int main(int argc, char *argv[]){
     rosbag::Bag bag;
     std::string dataFile = "/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
     // std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
-    bag.open(dataFile+"3x3_square.bag", rosbag::bagmode::Read);
+    bag.open(dataFile+"clockwise_3x3_square.bag", rosbag::bagmode::Read);
 
     // file to save the vertex and edges to
     ofstream myfile;
-    myfile.open (dataFile+"output_jack.g2o");
+    myfile.open (dataFile+"clockwise_3x3_square.g2o");
 
     // possible to look at point clouds?
     //pcl::visualization::CloudViewer viewer("Cloud Viewer");
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
         }
 
         sensor_msgs::PointCloud2::ConstPtr input = m.instantiate<sensor_msgs::PointCloud2>();
-        if (input != nullptr){
+        if (input != nullptr && vertexCount != 0){
             pcl::PointCloud<PointType>::Ptr cloud(new pcl::PointCloud<PointType>);
             pcl::fromROSMsg(*input,*cloud);
             //viewer.showCloud(cloud);
@@ -107,6 +107,10 @@ int main(int argc, char *argv[]){
 
             pointClouds.push_back(cloud);
             pointCloudsTime.push_back(vertexCount);
+
+            if(vertexCount == 0){
+                std::cout << "pushed zero" << std::endl;
+            }
         }
     }
 
@@ -125,6 +129,7 @@ int main(int argc, char *argv[]){
 
     for(int j=ignoredClouds;j<pointClouds.size();j+=cloudIncrement){
         // j should be all clouds with a possible transformation from previous clouds i
+        // std::cout << pointCloudsTime[j] << std::endl;
         pcl::PointCloud<PointType>::Ptr cloud_j = pointClouds[j];
         icp.setInputTarget(cloud_j);
         for(int i=0;i<j-ignoredClouds;i+=cloudIncrement){
@@ -145,7 +150,7 @@ int main(int argc, char *argv[]){
                 //std::cout<<"passed "<<i<<" "<<j<<std::endl;
                 transWorldCurrent = icp.getFinalTransformation();
                 pcl::getTranslationAndEulerAngles(transWorldCurrent,currentX,currentY,currentZ,currentRoll,currentPitch,currentYaw);
-                // myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 0.1 0 0 0.1 0 0.1" << std::endl;
+                myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 100 0 0 100 0 100" << std::endl;
                 // save in this format: EDGE_SE2 i j x y theta info(x, y, theta)
 
                 newEdgeCount ++;

@@ -32,6 +32,7 @@ def odom_callback(data):
     global vertex_pub
     global edge_pub
     # global cmd_pub
+    global first_vertex
     v = data.linear.x
     w = data.angular.z
 
@@ -58,7 +59,8 @@ def odom_callback(data):
     global pre_time
     now = rospy.get_time()
     
-    delta_t = dt = now - pre_time
+    # delta_t = dt = now - pre_time
+    delta_t = dt = 0.01
     theta = previous_pose[2]
 
     
@@ -79,16 +81,7 @@ def odom_callback(data):
     delta_pose = np.array([delta_x, delta_y, delta_theta])
     new_pose = previous_pose + delta_pose
     new_pose[2] = wrap2pi(new_pose[2])
-    # odom = Odometry()
-    # odom.header.stamp = now
-    # odom.header.frame_id = "odom"
 
-    # # set the position
-    # odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
-
-    # # set the velocity
-    # odom.child_frame_id = "base_link"
-    # odom.twist.twist = Twist(Vector3(vx, vy, 0), Vector3(0, 0, vth))
     vertex_output = "VERTEX_SE2" + " " +  str(now) + " " + str(new_pose[0]) + " " + str(new_pose[1]) + " " + str(new_pose[2])
     edge_output = "EDGE_SE2" + " " + str(pre_time) + " " + str(now) + " " + str(v_odom*dt) + " " + str(0) + " " + str(w_odom*dt) \
         + " " + str(cov[0, 0]) + " " + str(cov[0, 1]) + " " + str(cov[0, 2]) + " " + str(cov[1, 1]) + " " + str(cov[1, 2]) + " " + str(cov[2, 2])
@@ -99,8 +92,13 @@ def odom_callback(data):
     previous_pose = new_pose
     id += 1
     pre_id += 1
-    edge_pub.publish(edge_output)    
-    vertex_pub.publish(vertex_output)    
+    if first_vertex == 0:
+        # edge_pub.publish(edge_output)    
+        vertex_pub.publish(vertex_output)
+        first_vertex = 1
+    else:    
+        edge_pub.publish(edge_output)    
+        vertex_pub.publish(vertex_output)    
     pre_time = now
 
 if __name__ == '__main__':
@@ -112,6 +110,7 @@ if __name__ == '__main__':
         pre_time = rospy.get_time()
         # subscribe ctrl_cmd
         rospy.Subscriber("/cmd_vel", Twist, odom_callback)
+        first_vertex = 0
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
