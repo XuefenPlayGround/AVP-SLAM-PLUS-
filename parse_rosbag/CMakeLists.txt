@@ -40,6 +40,9 @@ catkin_package(
 add_executable(parse_rosbag parse_rosbag.cpp)
 target_link_libraries(parse_rosbag ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
+add_executable(parse_rosbag_jack parse_rosbag_jack.cpp)
+target_link_libraries(parse_rosbag_jack ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
+
 # catkin_install_python(PROGRAMS scripts/Odometry.py
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )

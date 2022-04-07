@@ -43,12 +43,13 @@ int main(int argc, char *argv[]){
 
     ros::init (argc, argv, "bag_it");
     rosbag::Bag bag;
-    std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
-    bag.open(dataFile+"2022-04-04-18-44-50.bag", rosbag::bagmode::Read);
+    std::string dataFile = "/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
+    // std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
+    bag.open(dataFile+"3x3_square.bag", rosbag::bagmode::Read);
 
     // file to save the vertex and edges to
     ofstream myfile;
-    myfile.open (dataFile+"output.g2o");
+    myfile.open (dataFile+"output_jack.g2o");
 
     // possible to look at point clouds?
     //pcl::visualization::CloudViewer viewer("Cloud Viewer");
@@ -141,7 +142,7 @@ int main(int argc, char *argv[]){
                 //std::cout<<"passed "<<i<<" "<<j<<std::endl;
                 transWorldCurrent = icp.getFinalTransformation();
                 pcl::getTranslationAndEulerAngles(transWorldCurrent,currentX,currentY,currentZ,currentRoll,currentPitch,currentYaw);
-                myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 0.1 0 0 0.1 0 0.1" << std::endl;
+                // myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 0.1 0 0 0.1 0 0.1" << std::endl;
                 // save in this format: EDGE_SE2 i j x y theta info(x, y, theta)
             }
         }

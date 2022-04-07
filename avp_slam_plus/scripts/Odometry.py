@@ -21,6 +21,13 @@ pre_id = -1
 
 previous_pose = np.array([0, 0, 0])
 
+def wrap2pi(yaw):
+    if yaw < -np.pi:
+        yaw += 2*np.pi
+    elif yaw > np.pi:
+        yaw -= 2*np.pi
+    return yaw
+
 def odom_callback(data):
     global vertex_pub
     global edge_pub
@@ -68,9 +75,10 @@ def odom_callback(data):
 
     delta_x = v_odom*delta_t*np.cos(previous_pose[2] + w_odom*delta_t)
     delta_y = v_odom*delta_t*np.sin(previous_pose[2] + w_odom*delta_t)
-    delta_theta = w_odom * delta_t
+    delta_theta = -w_odom * delta_t
     delta_pose = np.array([delta_x, delta_y, delta_theta])
     new_pose = previous_pose + delta_pose
+    new_pose[2] = wrap2pi(new_pose[2])
     # odom = Odometry()
     # odom.header.stamp = now
     # odom.header.frame_id = "odom"
@@ -82,10 +90,12 @@ def odom_callback(data):
     # odom.child_frame_id = "base_link"
     # odom.twist.twist = Twist(Vector3(vx, vy, 0), Vector3(0, 0, vth))
     vertex_output = "VERTEX_SE2" + " " +  str(now) + " " + str(new_pose[0]) + " " + str(new_pose[1]) + " " + str(new_pose[2])
-    edge_output = "EDGE_SE2" + " " + str(pre_time) + " " + str(now) + " " + str(delta_x) + " " + str(delta_y) + " " + str(delta_theta) \
+    edge_output = "EDGE_SE2" + " " + str(pre_time) + " " + str(now) + " " + str(v_odom*dt) + " " + str(0) + " " + str(w_odom*dt) \
         + " " + str(cov[0, 0]) + " " + str(cov[0, 1]) + " " + str(cov[0, 2]) + " " + str(cov[1, 1]) + " " + str(cov[1, 2]) + " " + str(cov[2, 2])
     # print(vertex_output)
     # print(edge_output)
+    # print("Pose:", new_pose)
+    # print("Delta", delta_pose)
     previous_pose = new_pose
     id += 1
     pre_id += 1
