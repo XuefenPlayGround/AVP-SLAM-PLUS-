@@ -1,4 +1,4 @@
-fileName: "square_one_intersec"
+fileName: "Lshape"
 dataFile: "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/"
 tooFar: 0.1
 ignoredClouds: 300

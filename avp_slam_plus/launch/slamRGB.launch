@@ -12,6 +12,10 @@
 　　 <!--  localization and mapping -->
     <node name="mapping" pkg="avp_slam_plus" type="mapping" output="screen">
     </node>
+
+    <!-- run odometry -->
+    <node name="Odometry" pkg="avp_slam_plus" type="Odometry.py" output="screen">
+   </node>
   
 
 </launch>
