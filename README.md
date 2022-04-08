@@ -1,5 +1,13 @@
-# AVP-SLAM-PLUS
-AVP-SLAM-PLUS is an implementation of AVP-SLAM and some new contributions. Performance of AVP-SLAM-PLUS could be found in video(https://www.bilibili.com/video/BV11R4y137xb/)
+# AVP-SLAM++
+**Authors**: [Vivek Jaiswal](mailto:vjaiswal@umich.edu), [Harsh Jhaveri](mailto:hjhaveri@umich.edu), [Jack Lee](mailto:chunhlee@umich.edu), [Devin McCulley](mailto:devmccu@umich.edu)
+
+AVP-SLAM++ is an extension on the AVP-SLAM-PLUS repository initially implemented by [Liu Guitao](mailto:liuguitao@sia.cn). 
+
+AVP-SLAM-PLUS is an implementation of [AVP-SLAM: Semantic Visual Mapping and Localization for Autonomous Vehicles in the Parking Lot (IROS 2020)](https://arxiv.org/abs/2007.01813) with some new contributions including:
+* The addition of a multi-RGBD camera mode. AVP-SLAM was initially only implmented with multiple RGB cameras
+* The addition of using normal distribution transformation (NDT) for localization. As published, AVP-SLAM uses iterative closest point (ICP).
+
+Performance of AVP-SLAM-PLUS could be found in video(https://www.bilibili.com/video/BV11R4y137xb/).
 
 <p align='center'>
 <img src="images/mapping1.gif"  width = 45% height = 40% " />
@@ -13,41 +21,73 @@ AVP-SLAM-PLUS is an implementation of AVP-SLAM and some new contributions. Perfo
 <h5 align="center">localization</h5>
 </p>
                   
-AVP-SLAM-PLUS contain a simple implementation of [AVP-SLAM: Semantic Visual Mapping and Localization for Autonomous Vehicles in the Parking Lot(IROS 2020)](https://arxiv.org/abs/2007.01813) and some new contributions.
-
-The new contribustions are as follows: Firstly,the system provide two camera style mode which are multi RGB cameras mode and multi RGBD cameras mode; Secondly,the system provide two registration mode which are ICP mode and NDT mode. Lastly,the system provide mapping mode and localization mode, that means you can not only do SLAM,but also do localization in a prior map.
+The AVP-SLAM-PLUS code is simple and developed to be a good demonstrative example for SLAM beginners. The framework of the original structure of AVP-SLAM-PLUS is as follows:
 
 <p align='center'>
 <img src="images/avp_slam_plus_frame.PNG" width = 55% height = 55% />
 <h5 align="center">AVP-SLAM-PLUS Framework</h5>
 </p>
 
-This code is simple and is a good learning material for SLAM beginners.
-
-
-**Author**: Liu Guitao
-
-**Email**: liuguitao@sia.cn
+During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent scaling and frames between Gazebo and RViz. Additionally, the performance of SLAM using the multi-RGBD mode was failure prone. While AVP-SLAM-PLUS consistently found a solution when run in multi-RGB mode, the trajectory resulting from SLAM tracked well initially, but was "scaled down" as time went on and was also not smooth overall. AVP-SLAM++ works to solve these problems with the following steps.
+- Implementing an odometry controller to produce simulated transformations between each subsequent pose
+- Extracting multi-RGB mode AVP-SLAM-PLUS poses
+- Optimizing the resulting trajectory using GraphSLAM, both using a batch solution and also ISAM2. 
+  - AVP-SLAM-PLUS poses were used as verticies
+  - Odometry transformations were used as edges
+  - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
 
 ## 1. Prerequisites
-### 1.1 **Ubuntu** and **ROS**
-Ubuntu 64-bit 18.04.ROS Melodic. [ROS Installation](http://wiki.ros.org/ROS/Installation)
+### 1.1 Operating System Basics
+Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long it supports `docker`.
 
-### 1.2 **Clone AVP-SLAM-PLUS** and **Load Gazebo Model** 
+### 1.2 Clone Repository and Docker Setup
+Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](BROKEN) for convenience.
+
+In order to proceed with setup, you must have docker installed on your local system. For Ubuntu 20.04, follow Step 1 and 2 [here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-3-using-the-docker-command).
+
+Once you have downloaded the docker image, navigate to the directory where this is stored and load the image onto your system.
 ```
-    cd ~/catkin_ws/src
-    git clone https://github.com/liuguitao/AVP-SLAM-PLUS.git
-    cd AVP-SLAM-PLUS/avp_slam_plus/model/
+    cd ~/path/to/docker/image
+    docker load avp-slam.tar
+```
+
+Clone the AVP-SLAM++ repository to you local system. This does not need to be in the same location as `avp-slam.tar`, as this repository will be used often
+```
+    git clone https://github.com/rob530-w22-team25/AVP-SLAM-PLUS.git
+```
+
+Edit the shell script to utilize the path to your AVP-SLAM repository, save it, and run your docker image with the following command. By linking your local AVP-SLAM repository to your docker image, you will be able to make changes locally and also run the most up-to-date code in the docker image.
+```
+    cd ~/path/to/shell/script
+    ./avp-slam.sh
+```
+
+Whenever you have updated your docker environment, and would like to save, use the `docker commit command`. While the edited docker image is running, execute
+```
+    docker ps
+```
+and copy the value of the `NAMES` field of the image that you are currently running. Then execute the `commit` command with the following:
+```
+    docker commit NAME_FROM_PS_COMMAND
+```
+You will receive a `SHA256` line as output to confirm the completion of the command. This will now allow you to utilize the latest version of your docker image the next time you run it with the provided shell script. Failure to do this after you have made changes will force you to enact your changes all over again. If you have gotten to this point in the docker setup, commit your progress to your docker image at least once to ensure models to do not need to be loaded again.
+
+### 1.3 **Load Gazebo Model** 
+Inside your docker image, run the following commands to load the models necessary for use in Gazebo.
+
+```
+    cd /home/catkin_ws/AVP-SLAM-PLUS/avp_slam_plus/model/
     unzip my_ground_plane.zip -d ~/.gazebo/models/
 ```
+Depending on how you have configured your docker paths, the first path may be slightly different. Regardless, navigate to the `models/` folder inside of AVP-SLAM-PLUS and then run the `unzip` command. 
 
 ## 2. Build AVP-SLAM-PLUS
-
 ```
-    cd ~/catkin_ws
+    cd /home/catkin_ws
     catkin_make
-    source ~/catkin_ws/devel/setup.bash
+    source /home/catkin_ws/devel/setup.bash
 ```
+
 ## 3. RUN Example
 ### 3.1  **RGB Mode**
                   
@@ -121,8 +161,6 @@ open a new terminal, control robot move
 ```
 
 ## 4.Acknowledgements
-Thanks for AVP_SLAM(Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su:Semantic Visual Mapping and Localization for Autonomous Vehicles in the Parking Lot),
+We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
 
-Thanks for TurtleZhong(https://github.com/TurtleZhong/AVP-SLAM-SIM), whose simulated environment help me a lot.
-
-Thanks for huchunxu(https://github.com/huchunxu/ros_exploring), whose simulated robot model help me a lot.
+Additionally, we would like to acknowledge and give a big thanks to the W22 instructional team of [NAVARCH 568/ROB 530 Mobile Robotics](https://robots.engin.umich.edu/mobilerobotics/) for their teaching and continual support throughout this entire process. We appreciated the effort and the learning opportunity.
