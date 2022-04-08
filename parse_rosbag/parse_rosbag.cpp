@@ -68,14 +68,14 @@ int main(int argc, char *argv[]){
     std::vector<double> pointCloudsTheta;
 
     rosbag::Bag bag;
-    std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/rosbag/";
-    std::string outFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/g2o/";
+    std::string dataDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/rosbag/";
+    std::string outDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/g2o/";
 
-    bag.open(dataFile+fileName+".bag", rosbag::bagmode::Read);
+    bag.open(dataDir+fileName+".bag", rosbag::bagmode::Read);
 
-    // file to save the vertex and edges to
+    // file to save the vertex and edges to dedicated g2o file
     ofstream myfile;
-    myfile.open (outFile+fileName+".g2o");
+    myfile.open (outDir+fileName+".g2o");
 
     // possible to look at point clouds?
     //pcl::visualization::CloudViewer viewer("Cloud Viewer");

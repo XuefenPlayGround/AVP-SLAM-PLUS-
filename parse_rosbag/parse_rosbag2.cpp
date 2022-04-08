@@ -52,12 +52,14 @@ int main(int argc, char *argv[]){
     }
 
     rosbag::Bag bag;
-    std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
-    bag.open(dataFile+fileName+".bag", rosbag::bagmode::Read);
+    std::string dataDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/rosbag/";
+    std::string outDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/g2o/";
 
-    // file to save the vertex and edges to
+    bag.open(dataDir+fileName+".bag", rosbag::bagmode::Read);
+
+    // file to save the vertex and edges to dedicated g2o file
     ofstream myfile;
-    myfile.open (dataFile+"output.g2o");
+    myfile.open (outDir+fileName+".g2o");
 
     Eigen::Affine3f transform_0 = Eigen::Affine3f::Identity();
     int initialized = 0;
