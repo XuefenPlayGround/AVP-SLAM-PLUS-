@@ -166,7 +166,7 @@ def incrementalSolution(output,GT,Odom):
 
 if __name__ == "__main__":
     #part A
-    with open('/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
+    with open('src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
         try:
             config = yaml.safe_load(stream)
             dataDir = config['dataFile']+'g2o/'

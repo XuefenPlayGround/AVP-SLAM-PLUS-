@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
     for(rosbag::MessageInstance const m: rosbag::View(bag))
     {
         std::string topic = m.getTopic();
-        ros::Time time = m.getTime();
+        // ros::Time time = m.getTime();
 
         std_msgs::String::ConstPtr s = m.instantiate<std_msgs::String>();
         if (s != NULL){
