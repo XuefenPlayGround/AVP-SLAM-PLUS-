@@ -4,9 +4,9 @@ import math
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist 
 from nav_msgs.msg import Odometry
-pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+pub = rospy.Publisher('/ideal_cmd_vel', Twist, queue_size=10)
 pub_Angle = rospy.Publisher('/Angle', Twist, queue_size=10)
-# pub_GoalAngle = rospy.Publisher('/GoalAngle', Twist, queue_size=10)
+
 # initialize pose
 x = 0.0
 y = 0.0
@@ -14,11 +14,9 @@ yaw_angle = 0.0
 rho = 10.0
 Ang_Dif = 10.0
 # parameters
-# goal_x = [1.0, 0.0, 1.0, 0.0]
-# goal_y = [0.0, 1.0, 0.0, 1.0]
-goal_x = [20, 20, 0]
-goal_y = [0, -3, -3]
-goal_theta = [0, 180, 0, -180]
+goal_x = [5, 5, 0 ,0]
+goal_y = [0, -5, -5, 3]
+# goal_theta = [0, 180, 0, -180]
 k_rho = 0.3
 k_alpha = -1.0 #1.0
 k_beta = -0.3
@@ -35,14 +33,12 @@ phase_flag = 0
 x_0 = 0
 y_0 = 0
 first_flag = 0
-# def Shortest_Ang():
 
 def Pose_callback(Odometry):
     global x
     global y
     global first_flag
     global x_0, y_0
-    # global 
 
     if first_flag == 0:
         x_0 = Odometry.pose.pose.position.x
@@ -55,11 +51,9 @@ def Pose_callback(Odometry):
 def imu_callback(orientation):
     global yaw_angle
     yaw_angle = orientation.pose.position.z
-    # print(yaw_angle)
 
 def vel_limit(vel_x):
     if vel_x > VelLimit:
-        # print("Limited")
         return VelLimit
     else:
         return vel_x
@@ -96,7 +90,6 @@ def pureRot(point_index):
     pub.publish(vel)
 
 def control_command(point_index):
-    # print("Goal: ", goal_x, goal_y)
     delta_x = (goal_x[point_index] - x)
     delta_y = (goal_y[point_index] - y)
     theta = yaw_angle
@@ -106,7 +99,6 @@ def control_command(point_index):
     rho = math.sqrt(delta_x**2 + delta_y**2)
     goal_angle = math.atan2(delta_y, delta_x)*180/math.pi
     alpha = -theta + goal_angle
-    # print(goal_angle)
     Angle = Twist()
     Angle.linear.x = goal_angle
     Angle.linear.y = alpha
@@ -123,9 +115,6 @@ def control_command(point_index):
         pass
     print("X: %f, Y: %f, Theta: %f" %(x, y, theta))
 
-    # print("atan2(delta_y, delta_x)", math.atan2(delta_y, delta_x)*180/math.pi)
-    # print("theta", theta)
-    # print("alpha", alpha)
     Alpha = alpha
     alpha = alpha * math.pi/180
     # beta = beta * math.pi/180
@@ -161,15 +150,11 @@ def start():
     rate = rospy.Rate(100) # 10hz
     point_index = 0
     goal_flag = 0
-    # rot_flag = 0
     global phase_flag
     while not rospy.is_shutdown():
-        # print(goal_x)
         if goal_flag == 1:
             ReachedGoal()
             break
-            # rospy.signal_shutdown("Reached Goal!!!")
-        # elif rho <= Dist_tolerance and Ang_Dif <= Ang_tolerance:
         elif rho <= Dist_tolerance and goal_flag == 0:
             point_index += 1
             phase_flag = 0
