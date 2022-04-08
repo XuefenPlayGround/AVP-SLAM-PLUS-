@@ -107,8 +107,6 @@ def batchSolution(output,GT,Odom):
 
     return resultPoses
 
-    #calculate erorr TODO
-
 def incrementalSolution(output,GT,Odom):
     vertexes = output[0]
     edges = output[1]
@@ -243,7 +241,7 @@ def calculateError(batch_result, isam_result, GT, Odom, SLAM):
 
 if __name__ == "__main__":
     #part A
-    with open('/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
+    with open('src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
         try:
             config = yaml.safe_load(stream)
             dataDir = config['dataFile']+'g2o/'
@@ -274,7 +272,7 @@ if __name__ == "__main__":
 
     calculateError(batch_result, isam_result, GT, Odom, output[0])
 
-    # plt.show()
+    plt.show()
     
     
     

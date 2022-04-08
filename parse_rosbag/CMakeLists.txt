@@ -37,12 +37,12 @@ catkin_package(
    INCLUDE_DIRS include
 )
 
-add_executable(parse_rosbag src/parse_rosbag.cpp)
-target_link_libraries(parse_rosbag ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
+add_executable(parse_rosbag_ICP src/parse_rosbag_ICP.cpp)
+target_link_libraries(parse_rosbag_ICP ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
 
-add_executable(parse_rosbag2 src/parse_rosbag2.cpp)
-target_link_libraries(parse_rosbag2 ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
+add_executable(parse_rosbag_ODOAVP src/parse_rosbag_ODOAVP.cpp)
+target_link_libraries(parse_rosbag_ODOAVP ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
 catkin_install_python(PROGRAMS src/2D_graph_slam.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

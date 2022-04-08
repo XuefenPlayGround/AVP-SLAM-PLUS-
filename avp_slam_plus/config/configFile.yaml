@@ -22,7 +22,7 @@ farPointThresh: 20
 closePointThresh: 0.1
 
 mapSave: true
-mapSaveLocation: "/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/avp_slam_plus/data/laserCloudMap.pcd"
+mapSaveLocation: "/home/catkin_ws/src/AVP-SLAM-PLUS/avp_slam_plus/data/laserCloudMap.pcd"
 odomKeyFramDisThresh: 1.0
 InvalidColorThresh: 60
 useICP: false
@@ -52,3 +52,5 @@ odom_c4: 0.001
 odom_cov: [0.03, 0.0, 0.0,
            0.0, 0.03, 0.0,
            0.0, 0.0, 0.01]
+
+

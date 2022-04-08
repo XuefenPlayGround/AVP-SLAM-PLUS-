@@ -4,7 +4,7 @@
    <rosparam file="$(find parse_rosbag)/config/configFile.yaml" command="load" />
    
     <!-- generate point cloud from RGB image of multi cameras -->
-    <node name="parse_rosbag" pkg="parse_rosbag" type="parse_rosbag2" output="screen" required="true">
+    <node name="parse_rosbag" pkg="parse_rosbag" type="parse_rosbag_ODOAVP" output="screen" required="true">
     </node>
 
 

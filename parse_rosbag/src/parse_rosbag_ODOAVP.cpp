@@ -21,14 +21,28 @@ int main(int argc, char *argv[]){
 
     std::string fileName;
     double tooFar = 0.01;
+    int ignoredClouds = 300;
     std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/";
+    double odomCovXX = 1;
+    double odomCovYY = 1;
+    double odomCovTT = 1;
+    double maxCovXX = 1;
+    double maxCovYY = 1;
+    double maxCovTT = 1;
 
     ros::NodeHandle nh;
    
-    // get parameter from config file 
+    // get parameter from config file
     nh.param<std::string>("dataFile", dataFile, "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/");
     nh.param<std::string>("fileName", fileName, "");
     nh.param<double>("tooFar", tooFar, 0.01);
+    nh.param<int>("ignoredClouds",ignoredClouds,300);
+    nh.param<double>("odomCovXX",odomCovXX,1);
+    nh.param<double>("odomCovYY",odomCovYY,1);
+    nh.param<double>("odomCovTT",odomCovTT,1);
+    nh.param<double>("maxCovXX",maxCovXX,1);
+    nh.param<double>("maxCovYY",maxCovYY,1);
+    nh.param<double>("maxCovTT",maxCovTT,1);
     
     rosbag::Bag bag;
     std::string dataDir = dataFile+"rosbag/";
@@ -59,7 +73,7 @@ int main(int argc, char *argv[]){
     for(rosbag::MessageInstance const m: rosbag::View(bag))
     {
         std::string topic = m.getTopic();
-        ros::Time time = m.getTime();
+        //ros::Time time = m.getTime();
         //std::cout<<"topic"<<topic<<std::endl;
         //std::cout<<"Time "<<time<<std::endl;
 
@@ -121,7 +135,7 @@ int main(int argc, char *argv[]){
                 Eigen::Affine3f transform_0t = transform_0.inverse()*transform_t;
                 transform_0 = transform_t;
                 double theta = atan2(-transform_0t(0, 1), transform_0t(0, 0));
-                myfile << "EDGE_SE2 " << vertexCount-1 << " " << vertexCount << " " << transform_0t(0, 3) << " " << transform_0t(1, 3) << " " << theta << " 0.1 0 0 0.1 0 0.3" << std::endl;
+                myfile << "EDGE_SE2 " << vertexCount-1 << " " << vertexCount << " " << transform_0t(0, 3) << " " << transform_0t(1, 3) << " " << theta << " " << odomCovXX << " 0 0 " << odomCovYY << " 0 " << odomCovTT << std::endl;
             }
             
             vertexCount++;
@@ -144,11 +158,12 @@ int main(int argc, char *argv[]){
     std::cout<<"done reading "<<slamX.size()<<" odometry vertexes"<<std::endl;
 
     int newEdgeCount = 0;
-    int ignoredClouds = 300;
-    for(int j=ignoredClouds;j<slamX.size();j++){
-        for(int i=0;i<j-ignoredClouds;i++){
+    for(size_t j=ignoredClouds;j<slamX.size();j++){
+        for(size_t i=0;i<j-ignoredClouds;i++){
             if(pow((slamX[i]-slamX[j]),2)+pow((slamY[i]-slamY[j]),2)<pow(tooFar,2)){
-                myfile << "EDGE_SE2 " << i << " " << j << " " << 0 << " " << 0 << " " << slamTheta[j]-slamTheta[i] << " 1 0 0 1 0 1" << std::endl;
+                double covXX = maxCovXX*abs(slamX[i]-slamX[j])/tooFar;
+                double covYY = maxCovYY*abs(slamY[i]-slamY[j])/tooFar;
+                myfile << "EDGE_SE2 " << i << " " << j << " " << 0 << " " << 0 << " " << slamTheta[j]-slamTheta[i] << " "<<covXX<<" 0 0 "<<covYY<<" 0 "<<maxCovTT<< std::endl;
                 //std::cout<<"i "<<i<<" "<<slamX[i]<<","<<slamY[i]<<" j "<<j<<" "<<slamX[j]<<","<<slamY[j]<<std::endl;
             
                 newEdgeCount++;
