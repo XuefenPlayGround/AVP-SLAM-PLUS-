@@ -1,0 +1,18 @@
+fileName: "5sidedSquare"
+dataFile: "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/"
+tooFar: 0.1
+
+# Iniital guess
+initialPose: [0,0,0]
+initialCov: [0.3, 0.0, 0.0,
+             0.0, 0.3, 0.0,
+             0.0, 0.0, 0.1]
+
+# Batch solution params
+relativeErrorTol: 0.00001
+maxIterations: 100
+
+# ISAM2 params
+relinearizeThreshold: 0.01
+relinearizeSkip: 1
+
