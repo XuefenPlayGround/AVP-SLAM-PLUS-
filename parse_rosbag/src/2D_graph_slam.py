@@ -53,7 +53,7 @@ def readSE2(file):
 
     return vertex_SE2_list, edge_SE2_list
 
-def batchSolution(output,GT):
+def batchSolution(output,GT,Odom):
     vertexes = output[0]
     edges = output[1]
 
@@ -91,11 +91,14 @@ def batchSolution(output,GT):
     resultY = np.array([pose[1].y() for pose in resultPoses])
     GTX = np.array([pose[1].x() for pose in GT[0]])
     GTY = np.array([pose[1].y() for pose in GT[0]])
+    OdomX = np.array([pose[1].x() for pose in Odom[0]])
+    OdomY = np.array([pose[1].y() for pose in Odom[0]])
     
     plt.figure()
-    plt.plot(initialX,initialY,label='Odometry')
-    plt.plot(resultX,resultY,label='Loop Closure')
-    plt.plot(GTX,GTY,label='GT')
+    plt.plot(initialX,initialY,"r",label='SLAM')
+    plt.plot(resultX,resultY,"g",label='Loop Closure')
+    plt.plot(GTX,GTY,"b",label='GT')
+    plt.plot(OdomX,OdomY,"black",label='Odometry')
     plt.title('Factor Graph batch')
     plt.xlabel('x')
     plt.ylabel('y')
@@ -104,7 +107,7 @@ def batchSolution(output,GT):
 
     #calculate erorr TODO
 
-def incrementalSolution(output,GT):
+def incrementalSolution(output,GT,Odom):
     vertexes = output[0]
     edges = output[1]
 
@@ -147,11 +150,14 @@ def incrementalSolution(output,GT):
     resultY = [pose[1].y() for pose in resultPoses]
     GTX = [pose[1].x() for pose in GT[0]]
     GTY = [pose[1].y() for pose in GT[0]]
+    OdomX = [pose[1].x() for pose in Odom[0]]
+    OdomY = [pose[1].y() for pose in Odom[0]]
 
     plt.figure()
-    plt.plot(initialX,initialY,label='Unoptimized Trajectory')
-    plt.plot(resultX,resultY,label='Optimized Trajectory')
-    plt.plot(GTX,GTY,label='GT')
+    plt.plot(initialX,initialY,"r",label='SLAM')
+    plt.plot(resultX,resultY,"g",label='Loop Closure')
+    plt.plot(GTX,GTY,"b",label='GT')
+    plt.plot(OdomX,OdomY,"black",label='Odometry')
     plt.title('ISAM2 incremental')
     plt.xlabel('x')
     plt.ylabel('y')
@@ -160,11 +166,12 @@ def incrementalSolution(output,GT):
 
 if __name__ == "__main__":
     #part A
-    with open('/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
+    with open('/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
         try:
             config = yaml.safe_load(stream)
             dataDir = config['dataFile']+'g2o/'
             GTDir = config['dataFile']+'GroundTruth/'
+            OdomDir = config['dataFile']+'odometry/'
             fileName = config['fileName']
             relativeErrorTol = config['relativeErrorTol']
             maxIterations = config['maxIterations']
@@ -179,12 +186,13 @@ if __name__ == "__main__":
     print('read',len(output[0]),'Vertexs and',len(output[1]),'edges')
 
     GT = readSE2(GTDir+fileName+'.g2o')
+    Odom = readSE2(OdomDir+fileName+'.g2o')
 
     #part B
-    batchSolution(output,GT)
+    batchSolution(output,GT,Odom)
     
     #part C
-    incrementalSolution(output,GT)
+    incrementalSolution(output,GT,Odom)
 
     plt.show()
     

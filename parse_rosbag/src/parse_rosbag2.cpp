@@ -1,23 +1,23 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <pcl/common/transforms.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl_conversions/pcl_conversions.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <opencv/cv.h>
+// #include <pcl/point_cloud.h>
+// #include <pcl/point_types.h>
+// #include <pcl/filters/voxel_grid.h>
+// #include <pcl/kdtree/kdtree_flann.h>
+// #include <pcl_conversions/pcl_conversions.h>
+// #include <sensor_msgs/PointCloud2.h>
+// #include <opencv/cv.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/ndt.h>
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
-#include <pcl/search/impl/search.hpp>
-#include <pcl/range_image/range_image.h>
-#include <pcl/visualization/cloud_viewer.h>
+// #include <pcl/filters/voxel_grid.h>
+// #include <pcl/registration/icp.h>
+// #include <pcl/registration/ndt.h>
+// #include <pcl/common/common.h>
+// #include <pcl/common/transforms.h>
+// #include <pcl/search/impl/search.hpp>
+// #include <pcl/range_image/range_image.h>
+// #include <pcl/visualization/cloud_viewer.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
@@ -31,7 +31,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 
-typedef pcl::PointXYZRGB PointType;
+// typedef pcl::PointXYZRGB PointType;
 
 int main(int argc, char *argv[]){
     ros::init(argc, argv, "parser");
@@ -51,14 +51,17 @@ int main(int argc, char *argv[]){
     std::string dataDir = dataFile+"rosbag/";
     std::string outDir = dataFile+"g2o/";
     std::string GTDir = dataFile+"GroundTruth/";
+    std::string OdomDir = dataFile+"odometry/";
 
     bag.open(dataDir+fileName+".bag", rosbag::bagmode::Read);
 
     // file to save the vertex and edges to dedicated g2o file
-    ofstream myfile;
-    ofstream GTfile;
+    std::ofstream myfile;
+    std::ofstream GTfile;
+    std::ofstream Odomfile;
     myfile.open(outDir+fileName+".g2o");
     GTfile.open(GTDir+fileName+".g2o");
+    Odomfile.open(OdomDir+fileName+".g2o");
 
     Eigen::Affine3f transform_0 = Eigen::Affine3f::Identity();
     int initialized = 0;
@@ -111,6 +114,7 @@ int main(int argc, char *argv[]){
                     transform_t.translation() << currentX, currentY, 0.0;
                     transform_t.rotate (Eigen::AngleAxisf (currentYaw, Eigen::Vector3f::UnitZ()));
                 }
+                Odomfile << "VERTEX_SE2 " << vertexCount << " " << currentX << " " << currentY << " " << currentYaw << std::endl;
                 
             }
             
@@ -140,7 +144,7 @@ int main(int argc, char *argv[]){
             vertexCount++;
         }
 
-        else if (odom != nullptr && topic=="/GT"){
+        else if (odom != nullptr && topic=="/odom"){
         //     nav_msgs::Odometry odom_msg = odom->data;
             
             double roll, pitch, yaw;
@@ -172,7 +176,9 @@ int main(int argc, char *argv[]){
 
 
     myfile.close();
-
+    GTfile.close();
+    Odomfile.close();
+    
     std::cout << "added " << newEdgeCount << " edges" << std::endl;
 
     return 0;
