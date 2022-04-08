@@ -7,20 +7,6 @@ from math import sin, cos
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
-gazebo_c1 = 0.001
-gazebo_c2 = 0.001
-gazebo_c3 = 0.001
-gazebo_c4 = 0.001
-
-odom_c1 = 0.01
-odom_c2 = 0.01
-odom_c3 = 0.01
-odom_c4 = 0.01
-# id = 0
-# pre_id = -1
-
-previous_pose = np.array([0, 0, 0])
-
 def wrap2pi(yaw):
     if yaw < -np.pi:
         yaw += 2*np.pi
@@ -32,7 +18,6 @@ def odom_callback(data):
     global vertex_pub
     global edge_pub
     global cmd_pub
-    global first_vertex
     v = data.linear.x
     w = data.angular.z
 
@@ -45,7 +30,6 @@ def odom_callback(data):
     g_rand = np.random.multivariate_normal([v, w], g_R)
     v_actual = g_rand[0]
     w_actual = g_rand[1]
-    # print("actual: ", v_actual, w_actual)
     gazebo_vel_cmd.linear.x = v_actual
     gazebo_vel_cmd.angular.z = w_actual
     cmd_pub.publish(gazebo_vel_cmd)
@@ -55,7 +39,6 @@ def odom_callback(data):
     ######################################################################
     global previous_pose
     global id
-    global pre_id
     global pre_time
     now = rospy.get_time()
     
@@ -72,60 +55,54 @@ def odom_callback(data):
     v_odom = o_rand[0]
     w_odom = o_rand[1]
 
-    #Vt = np.array([[ (-sin(theta)+sin(theta+w_odom*dt))/w_odom,  v_odom*(sin(theta)-sin(theta+w_odom*dt))/(w_odom**2) + (v_odom*cos(theta+w_odom*dt)*dt)/w_odom ],
+    # calculating covariance using Jacobian and motion noise o_R
+    # Vt = np.array([[ (-sin(theta)+sin(theta+w_odom*dt))/w_odom,  v_odom*(sin(theta)-sin(theta+w_odom*dt))/(w_odom**2) + (v_odom*cos(theta+w_odom*dt)*dt)/w_odom ],
     #            [ (cos(theta)-cos(theta+w_odom*dt))/w_odom,  -v_odom*(cos(theta)-cos(theta+w_odom*dt))/(w_odom**2) + (v_odom*sin(theta+w_odom*dt)*dt)/w_odom ],
     #            [0, dt]])
 
-    #cov = np.matmul(np.matmul(Vt, o_R), Vt.T)
-    cov = np.array([[0.03, 0, 0],[0, 0.03, 0],[0, 0, 0.01]])
+    # cov = np.matmul(np.matmul(Vt, o_R), Vt.T)
+
+    # hand tuning covariance
+    # cov = np.array([[0.03, 0, 0],[0, 0.03, 0],[0, 0, 0.01]])
 
     delta_v = v_odom*dt
     delta_x = v_odom*dt*np.cos(theta + w_odom*dt)
     delta_y = v_odom*dt*np.sin(theta + w_odom*dt)
     delta_theta = -w_odom * dt
     delta_pose = np.array([delta_x, delta_y, delta_theta])
-    new_pose = previous_pose + delta_pose
-    if(new_pose[2]>np.pi):
-        new_pose[2] -= 2*np.pi
-    if(new_pose[2]<-np.pi):
-        new_pose[2] += 2*np.pi
-    # odom = Odometry()
-    # odom.header.stamp = now
-    # odom.header.frame_id = "odom"
 
-    # # set the position
-    # odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+    new_pose = previous_pose + delta_pose
+    new_pose[2] = wrap2pi(new_pose[2])
 
     vertex_output = "VERTEX_SE2" + " " +  str(now) + " " + str(new_pose[0]) + " " + str(new_pose[1]) + " " + str(new_pose[2])
     edge_output = "EDGE_SE2" + " " + str(pre_time) + " " + str(now) + " " + str(delta_v) + " " + str(0) + " " + str(delta_theta) \
         + " " + str(cov[0, 0]) + " " + str(cov[0, 1]) + " " + str(cov[0, 2]) + " " + str(cov[1, 1]) + " " + str(cov[1, 2]) + " " + str(cov[2, 2])
-    # print(vertex_output)
-    # print(edge_output)
-    # print("Pose:", new_pose)
-    # print("Delta", delta_pose)
+    
     previous_pose = new_pose
-    if(id>0):
+    if(id > 0):
         edge_pub.publish(edge_output)    
         vertex_pub.publish(vertex_output)
     else: 
         vertex_pub.publish(vertex_output)
+        id += 1
 
-    id += 1
-    pre_id += 1
 
 if __name__ == '__main__':
 
-    gazebo_c1 = 0.001
-    gazebo_c2 = 0.001
-    gazebo_c3 = 0.001
-    gazebo_c4 = 0.001
+    gazebo_c1 = rospy.get_param("gazebo_c1")
+    gazebo_c2 = rospy.get_param("gazebo_c2")
+    gazebo_c3 = rospy.get_param("gazebo_c3")
+    gazebo_c4 = rospy.get_param("gazebo_c4")
 
-    odom_c1 = 0.001
-    odom_c2 = 0.001
-    odom_c3 = 0.001
-    odom_c4 = 0.001
+    odom_c1 = rospy.get_param("odom_c1")
+    odom_c2 = rospy.get_param("odom_c2")
+    odom_c3 = rospy.get_param("odom_c3")
+    odom_c4 = rospy.get_param("odom_c4")
+
+    cov = rospy.get_param("odom_cov")
+    cov = np.asarray(cov).reshape(3, 3)
+
     id = 0
-    pre_id = -1
 
     previous_pose = np.array([0, 0, 0])
 
@@ -136,7 +113,6 @@ if __name__ == '__main__':
         cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         pre_time = rospy.get_time()
         # subscribe ctrl_cmd
-        #rospy.Subscriber("/cmd_vel", Twist, odom_callback)
         rospy.Subscriber("/ideal_cmd_vel", Twist, odom_callback)
         rospy.spin()
     except rospy.ROSInterruptException:

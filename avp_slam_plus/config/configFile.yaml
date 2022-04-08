@@ -36,4 +36,19 @@ ndtTransformationEpsilon: 0.01
 ndtResolution: 1.0
 ndtFitnessScoreThresh: 0.3
 
+# for adding noise in Gazebo
+gazebo_c1: 0.001
+gazebo_c2: 0.001
+gazebo_c3: 0.001
+gazebo_c4: 0.001
 
+# for adding noise in Odometry
+odom_c1: 0.001
+odom_c2: 0.001
+odom_c3: 0.001
+odom_c4: 0.001
+
+# hand tuning covariance for odometry edge
+odom_cov: [0.03, 0.0, 0.0,
+           0.0, 0.03, 0.0,
+           0.0, 0.0, 0.01]

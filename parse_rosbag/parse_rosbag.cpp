@@ -39,8 +39,8 @@ int main(int argc, char *argv[]){
 
     std::string fileName;
 
-    double icpFitnessScoreThresh = 0.1;
-    double closeThresh = 0.1;
+    double icpFitnessScoreThresh = 0.01;
+    double closeThresh = 0.01;
 
     if(argc>=2){
         fileName = argv[1];
@@ -63,15 +63,19 @@ int main(int argc, char *argv[]){
 
     std::vector<pcl::PointCloud<PointType>::Ptr> pointClouds;
     std::vector<int> pointCloudsTime;
+    std::vector<double> pointCloudsX;
+    std::vector<double> pointCloudsY;
     std::vector<double> pointCloudsTheta;
 
     rosbag::Bag bag;
-    std::string dataFile = "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/";
-    bag.open(dataFile+fileName+".bag", rosbag::bagmode::Read);
+    std::string dataDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/rosbag/";
+    std::string outDir = "/home/catkin_ws/src/AVP-SLAM-PLUS/data/g2o/";
 
-    // file to save the vertex and edges to
+    bag.open(dataDir+fileName+".bag", rosbag::bagmode::Read);
+
+    // file to save the vertex and edges to dedicated g2o file
     ofstream myfile;
-    myfile.open (dataFile+"clockwise_3x3_square.g2o");
+    myfile.open (outDir+fileName+".g2o");
 
     // possible to look at point clouds?
     //pcl::visualization::CloudViewer viewer("Cloud Viewer");
@@ -108,9 +112,11 @@ int main(int argc, char *argv[]){
 
                 //trim x
                 pos = text.find(" ");
+                currentX = std::stod(text.substr(0,pos));
                 text = text.erase(0,pos+1);
                 //trim y
                 pos = text.find(" ");
+                currentY = std::stod(text.substr(0,pos));
                 text = text.erase(0,pos+1);
                 //save yaw
                 currentYaw = std::stod(text);
@@ -128,8 +134,8 @@ int main(int argc, char *argv[]){
                 text = text.erase(0,pos+1);
                 myfile << name << " " << edgeCount << " " << edgeCount+1 << " " << text << std::endl;
                 edgeCount ++;
-
             }
+            
             
         }
 
@@ -139,16 +145,19 @@ int main(int argc, char *argv[]){
             pcl::fromROSMsg(*input,*cloud);
 
             pointClouds.push_back(cloud);
-            pointCloudsTime.push_back(vertexCount);
+            pointCloudsTime.push_back(vertexCount-1);
+            pointCloudsX.push_back(currentX);
+            pointCloudsY.push_back(currentY);
             pointCloudsTheta.push_back(currentYaw);
         }
+
     }
 
     bag.close();
     std::cout<<"done reading "<<pointClouds.size()<<" clouds"<<std::endl;
 
-    int ignoredClouds = 300;
-    int cloudIncrement = 10;
+    int ignoredClouds = 500;
+    int cloudIncrement = 1;
     int newEdgeCount = 0;
 
     static pcl::IterativeClosestPoint<PointType, PointType> icp;
@@ -157,7 +166,11 @@ int main(int argc, char *argv[]){
     icp.setTransformationEpsilon(1e-10);
     icp.setEuclideanFitnessEpsilon(0.001);
 
-    for(int j=ignoredClouds;j<pointClouds.size()-1;j+=cloudIncrement){
+    for(int j=ignoredClouds;j<pointClouds.size();j+=cloudIncrement){
+        if(pointCloudsX[j]<0.5 || pointCloudsX[j]>1.5 || pointCloudsY[j]<-0.5 || pointCloudsY[j]>0.5){
+            continue;
+        }
+        std::cout<<"Trying "<<j<<"/"<<pointClouds.size()<<"\r";
         // j should be all clouds with a possible transformation from previous clouds i
         // std::cout << pointCloudsTime[j] << std::endl;
         pcl::PointCloud<PointType>::Ptr cloud_j = pointClouds[j];
@@ -165,19 +178,25 @@ int main(int argc, char *argv[]){
         //transform cloud to map orientation
         pcl::PointCloud<PointType>::Ptr transformed_cloud_j (new pcl::PointCloud<PointType> ());
         Eigen::Affine3f transform = Eigen::Affine3f::Identity();
-        transform.rotate (Eigen::AngleAxisf (-pointCloudsTheta[j], Eigen::Vector3f::UnitZ()));
+        transform.rotate (Eigen::AngleAxisf (pointCloudsTheta[j], Eigen::Vector3f::UnitZ()));
         pcl::transformPointCloud (*cloud_j, *transformed_cloud_j, transform);
 
         icp.setInputTarget(transformed_cloud_j);
 
         for(int i=0;i<j-ignoredClouds;i+=cloudIncrement){
+            //save time by ignoring far comparisons
+            double tooFar = 2;
+            if(pow((pointCloudsX[i]-pointCloudsX[j]),2)+pow((pointCloudsY[i]-pointCloudsY[j]),2)>pow(tooFar,2)){
+                continue;
+            }
+
             //compare the current cloud(j) to all past clouds(i)
             pcl::PointCloud<PointType>::Ptr cloud_i = pointClouds[i];
 
             //transform cloud to map orientation
             pcl::PointCloud<PointType>::Ptr transformed_cloud_i (new pcl::PointCloud<PointType> ());
             transform = Eigen::Affine3f::Identity();
-            transform.rotate (Eigen::AngleAxisf (-pointCloudsTheta[i], Eigen::Vector3f::UnitZ()));
+            transform.rotate (Eigen::AngleAxisf (pointCloudsTheta[i], Eigen::Vector3f::UnitZ()));
             pcl::transformPointCloud (*cloud_i, *transformed_cloud_i, transform);
 
             icp.setInputSource(transformed_cloud_i);
@@ -199,31 +218,26 @@ int main(int argc, char *argv[]){
                     myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 10000 1000 1000 10000 1000 10000" << std::endl;
                     newEdgeCount ++;
 
-                    /*
+                    std::cout<<"matched "<<i<<" at "<<pointCloudsX[i]<<","<<pointCloudsY[i]<<" and "<<j<<" at "<<pointCloudsX[j]<<","<<pointCloudsY[j]<<std::endl;
+
+                    
                     sensor_msgs::PointCloud2 cameraCloudFrameMsg;
-                    pcl::toROSMsg(*cloud_i, cameraCloudFrameMsg);
+                    pcl::toROSMsg(*transformed_cloud_i, cameraCloudFrameMsg);
                     cameraCloudFrameMsg.header.stamp = ros::Time::now();
                     cameraCloudFrameMsg.header.frame_id = "/camera0_link";
                     pubCloudI.publish(cameraCloudFrameMsg);
 
-                    pcl::toROSMsg(*cloud_j, cameraCloudFrameMsg);
+                    pcl::toROSMsg(*transformed_cloud_j, cameraCloudFrameMsg);
                     cameraCloudFrameMsg.header.stamp = ros::Time::now();
                     cameraCloudFrameMsg.header.frame_id = "/camera0_link";
                     pubCloudJ.publish(cameraCloudFrameMsg);
 
-                    std::cout << "cloud " << i << " and " << j << std::endl;
                     do 
                     {
                         cout << '\n' << "Press a key to continue...";
                     } while (std::cin.get() != '\n');
-                    */
+                    
                 }
-
-                //myfile << "EDGE_SE2 " << pointCloudsTime[i] << " " << pointCloudsTime[j] << " " << currentX << " " << currentY << " " << currentYaw << " 0.1 0 0 0.1 0 0.1" << std::endl;
-                //newEdgeCount ++;
-
-                // save in this format: EDGE_SE2 i j x y theta info(x, y, theta)
-                
                 
             }
         }
