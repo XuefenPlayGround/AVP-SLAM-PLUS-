@@ -37,13 +37,13 @@ catkin_package(
    INCLUDE_DIRS include
 )
 
-add_executable(parse_rosbag parse_rosbag.cpp)
+add_executable(parse_rosbag src/parse_rosbag.cpp)
 target_link_libraries(parse_rosbag ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
 
-add_executable(parse_rosbag2 parse_rosbag2.cpp)
+add_executable(parse_rosbag2 src/parse_rosbag2.cpp)
 target_link_libraries(parse_rosbag2 ${catkin_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})
 
-# catkin_install_python(PROGRAMS scripts/Odometry.py
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS src/2D_graph_slam.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
