@@ -16,8 +16,8 @@ Ang_Dif = 10.0
 # parameters
 # goal_x = [1.0, 0.0, 1.0, 0.0]
 # goal_y = [0.0, 1.0, 0.0, 1.0]
-goal_x = [3, 3, 0, 0]
-goal_y = [0, -3, -3, 0]
+goal_x = [20, 20, 0]
+goal_y = [0, -3, -3]
 goal_theta = [0, 180, 0, -180]
 k_rho = 0.3
 k_alpha = -1.0 #1.0

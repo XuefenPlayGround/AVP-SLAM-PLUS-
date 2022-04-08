@@ -16,8 +16,8 @@ odom_c1 = 0.01
 odom_c2 = 0.01
 odom_c3 = 0.01
 odom_c4 = 0.01
-id = 0
-pre_id = -1
+# id = 0
+# pre_id = -1
 
 previous_pose = np.array([0, 0, 0])
 
@@ -61,7 +61,7 @@ def odom_callback(data):
     
     dt = now - pre_time
     if dt > 0.1:
-        dt  = 0.01
+        dt = 0.01
     pre_time = now
     theta = previous_pose[2]
     
