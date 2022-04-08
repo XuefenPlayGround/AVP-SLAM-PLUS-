@@ -1,23 +1,8 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <pcl/common/transforms.h>
-// #include <pcl/point_cloud.h>
-// #include <pcl/point_types.h>
-// #include <pcl/filters/voxel_grid.h>
-// #include <pcl/kdtree/kdtree_flann.h>
-// #include <pcl_conversions/pcl_conversions.h>
-// #include <sensor_msgs/PointCloud2.h>
-// #include <opencv/cv.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
-// #include <pcl/filters/voxel_grid.h>
-// #include <pcl/registration/icp.h>
-// #include <pcl/registration/ndt.h>
-// #include <pcl/common/common.h>
-// #include <pcl/common/transforms.h>
-// #include <pcl/search/impl/search.hpp>
-// #include <pcl/range_image/range_image.h>
-// #include <pcl/visualization/cloud_viewer.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
@@ -30,8 +15,6 @@
 #include <rosbag/view.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
-
-// typedef pcl::PointXYZRGB PointType;
 
 int main(int argc, char *argv[]){
     ros::init(argc, argv, "parser");

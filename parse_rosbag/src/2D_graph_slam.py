@@ -105,6 +105,8 @@ def batchSolution(output,GT,Odom):
     plt.legend()
     plt.draw()
 
+    return resultPoses
+
     #calculate erorr TODO
 
 def incrementalSolution(output,GT,Odom):
@@ -164,6 +166,81 @@ def incrementalSolution(output,GT,Odom):
     plt.legend()
     plt.draw()
 
+    return resultPoses
+
+def calculateRMSE(x, y, GT_x, GT_y):
+    return np.sum(np.sqrt((x - GT_x)**2 + (y - GT_y)**2))
+
+def calculateError(batch_result, isam_result, GT, Odom, SLAM):
+    # pick out GT and Odom that matches the result in timestamp
+    GT_x = []
+    GT_y = []
+    Odom_x = []
+    Odom_y = []
+
+    for i in range(len(output[0])):
+        for j in range(len(GT[0])):
+            if output[0][i][0] == GT[0][j][0]:
+                GT_x.append(GT[0][j][1].x())
+                GT_y.append(GT[0][j][1].y())
+                break
+
+        for k in range(len(Odom[0])):
+            if output[0][i][0] == Odom[0][k][0]:
+                Odom_x.append(Odom[0][k][1].x())
+                Odom_y.append(Odom[0][k][1].y())
+                break
+
+    GT_x = np.asarray(GT_x)
+    GT_y = np.asarray(GT_y)
+    Odom_x = np.asarray(Odom_x)
+    Odom_y = np.asarray(Odom_y)
+    
+    GT_x = np.insert(GT_x, 0, 0)
+    GT_y = np.insert(GT_y, 0, 0)
+    GT_x = np.delete(GT_x, -1)
+    GT_y = np.delete(GT_y, -1)
+
+    Odom_x = np.insert(Odom_x, 0, 0)
+    Odom_y = np.insert(Odom_y, 0, 0)
+    Odom_x = np.delete(Odom_x, -1)
+    Odom_y = np.delete(Odom_y, -1)
+
+    batch_x = []
+    batch_y = []
+    for i in range(len(batch_result)):
+        batch_x.append(batch_result[i][1].x())
+        batch_y.append(batch_result[i][1].y())
+    batch_x = np.asarray(batch_x)
+    batch_y = np.asarray(batch_y)
+
+    isam_x = []
+    isam_y = []
+    for i in range(len(isam_result)):
+        isam_x.append(isam_result[i][1].x())
+        isam_y.append(isam_result[i][1].y())
+    isam_x = np.asarray(isam_x)
+    isam_y = np.asarray(isam_y)
+    
+    SLAM_x = []
+    SLAM_y = []
+    for i in range(len(SLAM)):
+        SLAM_x.append(SLAM[i][1].x())
+        SLAM_y.append(SLAM[i][1].y())
+    SLAM_x = np.asarray(SLAM_x)
+    SLAM_y = np.asarray(SLAM_y)
+
+    GT_Odom_error = calculateRMSE(Odom_x, Odom_y, GT_x[:len(Odom_x)], GT_y[:len(Odom_y)])
+    GT_batch_error = calculateRMSE(batch_x, batch_y, GT_x, GT_y)
+    GT_isam_error = calculateRMSE(isam_x, isam_y, GT_x, GT_y)
+    GT_SLAM_error = calculateRMSE(SLAM_x, SLAM_y, GT_x, GT_y)
+    print("SLAM: ", GT_SLAM_error)
+    print("Odom: ", GT_Odom_error)
+    print("batch: ", GT_batch_error)
+    print("isam: ", GT_isam_error)
+
+
+
 if __name__ == "__main__":
     #part A
     with open('/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
@@ -187,14 +264,17 @@ if __name__ == "__main__":
 
     GT = readSE2(GTDir+fileName+'.g2o')
     Odom = readSE2(OdomDir+fileName+'.g2o')
+    
 
     #part B
-    batchSolution(output,GT,Odom)
+    batch_result = batchSolution(output,GT,Odom)
     
     #part C
-    incrementalSolution(output,GT,Odom)
+    isam_result = incrementalSolution(output,GT,Odom)
 
-    plt.show()
+    calculateError(batch_result, isam_result, GT, Odom, output[0])
+
+    # plt.show()
     
     
     
