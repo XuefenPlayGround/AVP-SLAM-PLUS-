@@ -37,7 +37,9 @@ def odom_callback(data):
     global pre_time
     now = rospy.get_time()
     
-    dt = now - pre_time    
+    dt = now - pre_time
+    if(dt>1):       #invalid dt gets reset to default
+        dt = 0.01
     pre_time = now
     theta = previous_pose[2]
     

@@ -38,6 +38,7 @@ int main(int argc, char *argv[]){
     // ros::NodeHandle nh;
 
     std::string fileName;
+    double tooFar = 0.01;
 
     if(argc>=2){
         fileName = argv[1];
@@ -45,6 +46,9 @@ int main(int argc, char *argv[]){
     else{
         std::cout<<"argument missing: file name"<<std::endl;
         return 1;
+    }
+    if(argc>=3){
+        tooFar = std::stod(argv[2]);
     }
 
     rosbag::Bag bag;
@@ -59,7 +63,6 @@ int main(int argc, char *argv[]){
     int initialized = 0;
     Eigen::Affine3f transform_t = Eigen::Affine3f::Identity();
 
-    std::vector<int> slamID;
     std::vector<double> slamX;
     std::vector<double> slamY;
     std::vector<double> slamTheta;
@@ -70,8 +73,8 @@ int main(int argc, char *argv[]){
     {
         std::string topic = m.getTopic();
         ros::Time time = m.getTime();
-        std::cout<<"topic"<<topic<<std::endl;
-        std::cout<<"Time "<<time<<std::endl;
+        //std::cout<<"topic"<<topic<<std::endl;
+        //std::cout<<"Time "<<time<<std::endl;
 
         std_msgs::String::ConstPtr s = m.instantiate<std_msgs::String>();
         if (s != NULL){
@@ -96,11 +99,6 @@ int main(int argc, char *argv[]){
                 text = text.erase(0,pos+1);
                 //save yaw
                 double currentYaw = std::stod(text);
-
-                slamX.push_back(currentX);
-                slamY.push_back(currentY);
-                slamTheta.push_back(currentYaw);
-                slamID.push_back(vertexCount);
 
                 if(initialized==0){
                     transform_0.translation() << currentX, currentY, 0.0;
@@ -127,6 +125,9 @@ int main(int argc, char *argv[]){
             tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
 
             myfile << "VERTEX_SE2 " << vertexCount << " " << odom->pose.pose.position.x << " " << odom->pose.pose.position.y << " " << yaw << std::endl;
+            slamX.push_back(odom->pose.pose.position.x);
+            slamY.push_back(odom->pose.pose.position.y);
+            slamTheta.push_back(yaw);
 
             if(vertexCount>0){
                 Eigen::Affine3f transform_0t = transform_0.inverse()*transform_t;
@@ -140,15 +141,16 @@ int main(int argc, char *argv[]){
     }
 
     bag.close();
-    std::cout<<"done reading "<<slamID.size()<<" odometry vertexes"<<std::endl;
+    std::cout<<"done reading "<<slamX.size()<<" odometry vertexes"<<std::endl;
 
     int newEdgeCount = 0;
-    int ignoredClouds = 100;
-    for(int j=ignoredClouds;j<slamID.size();j++){
+    int ignoredClouds = 300;
+    for(int j=ignoredClouds;j<slamX.size();j++){
         for(int i=0;i<j-ignoredClouds;i++){
-            double tooFar = 0.001;
             if(pow((slamX[i]-slamX[j]),2)+pow((slamY[i]-slamY[j]),2)<pow(tooFar,2)){
-                myfile << "EDGE_SE2 " << slamID[i] << " " << slamID[j] << " " << 0 << " " << 0 << " " << 0 << " 10000 1000 1000 10000 1000 10000" << std::endl;
+                myfile << "EDGE_SE2 " << i << " " << j << " " << 0 << " " << 0 << " " << slamTheta[j]-slamTheta[i] << " 1 0 0 1 0 1" << std::endl;
+                //std::cout<<"i "<<i<<" "<<slamX[i]<<","<<slamY[i]<<" j "<<j<<" "<<slamX[j]<<","<<slamY[j]<<std::endl;
+            
                 newEdgeCount++;
             }
         }
