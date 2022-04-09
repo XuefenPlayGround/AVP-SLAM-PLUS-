@@ -159,15 +159,25 @@ int main(int argc, char *argv[]){
 
     int newEdgeCount = 0;
     for(size_t j=ignoredClouds;j<slamX.size();j++){
+        int closestMatch = -1;
+        double closestDist = 1000;
         for(size_t i=0;i<j-ignoredClouds;i++){
-            if(pow((slamX[i]-slamX[j]),2)+pow((slamY[i]-slamY[j]),2)<pow(tooFar,2)){
-                double covXX = maxCovXX*abs(slamX[i]-slamX[j])/tooFar;
-                double covYY = maxCovYY*abs(slamY[i]-slamY[j])/tooFar;
-                myfile << "EDGE_SE2 " << i << " " << j << " " << 0 << " " << 0 << " " << slamTheta[j]-slamTheta[i] << " "<<covXX<<" 0 0 "<<covYY<<" 0 "<<maxCovTT<< std::endl;
-                //std::cout<<"i "<<i<<" "<<slamX[i]<<","<<slamY[i]<<" j "<<j<<" "<<slamX[j]<<","<<slamY[j]<<std::endl;
-            
-                newEdgeCount++;
+            double dist = pow((slamX[i]-slamX[j]),2)+pow((slamY[i]-slamY[j]),2);
+            if(dist<pow(tooFar,2)){
+                if(dist<closestDist){
+                    closestMatch=i;
+                    closestDist = dist;
+                }
             }
+        }
+        if(closestMatch!=-1){
+            size_t i = closestMatch;
+            double covXX = maxCovXX*abs(slamX[i]-slamX[j])/tooFar;
+            double covYY = maxCovYY*abs(slamY[i]-slamY[j])/tooFar;
+            myfile << "EDGE_SE2 " << i << " " << j << " " << 0 << " " << 0 << " " << slamTheta[j]-slamTheta[i] << " "<<covXX<<" 0 0 "<<covYY<<" 0 "<<maxCovTT<< std::endl;
+            //std::cout<<"i "<<i<<" "<<slamX[i]<<","<<slamY[i]<<" j "<<j<<" "<<slamX[j]<<","<<slamY[j]<<std::endl;
+            
+            newEdgeCount++;
         }
     }
 

@@ -390,13 +390,13 @@ void systemInit(){
 
 //   synchronism images of all camera
 void removeUnsynData(double& timeMax,double& timeCameraImage,std::queue<sensor_msgs::ImageConstPtr>& cameraImageBuf){
-     while((timeCameraImage<timeMax) && !cameraImageBuf.empty()){
-                 mBuf.lock();
-                 cameraImageBuf.pop();
-                 mBuf.unlock();
-                 if(!cameraImageBuf.empty())
-                     timeCameraImage=cameraImageBuf.front()->header.stamp.toSec();
-            }
+    while((timeCameraImage<timeMax) && !cameraImageBuf.empty()){
+        mBuf.lock();
+        cameraImageBuf.pop();
+        mBuf.unlock();
+        if(!cameraImageBuf.empty())
+            timeCameraImage=cameraImageBuf.front()->header.stamp.toSec();
+    }
 }
 
 //    compute point cloud according to IPM principle
