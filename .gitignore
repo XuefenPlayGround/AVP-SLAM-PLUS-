@@ -35,3 +35,4 @@
 /parse_rosbag/data/g2o/*.g2o
 /parse_rosbag/data/rosbag/*.bag
 /parse_rosbag/data/GroundTruth/*.g2o
+/parse_rosbag/data/odometry/*.g2o
