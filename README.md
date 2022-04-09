@@ -38,7 +38,7 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
 
 ## 1. Prerequisites
 ### 1.1 Operating System Basics
-Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long it supports `docker`.
+Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long as it supports `docker`.
 
 ### 1.2 Clone Repository and Docker Setup
 Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](BROKEN) for convenience.
@@ -48,7 +48,7 @@ In order to proceed with setup, you must have docker installed on your local sys
 Once you have downloaded the docker image, navigate to the directory where this is stored and load the image onto your system.
 ```
     cd ~/path/to/docker/image
-    docker load avp-slam.tar
+    docker load --input avp-slam.tar
 ```
 
 Clone the AVP-SLAM++ repository to you local system. This does not need to be in the same location as `avp-slam.tar`, as this repository will be used often
@@ -68,9 +68,9 @@ Whenever you have updated your docker environment, and would like to save, use t
 ```
 and copy the value of the `NAMES` field of the image that you are currently running. Then execute the `commit` command with the following:
 ```
-    docker commit NAME_FROM_PS_COMMAND
+    docker commit NAME_FROM_PS_COMMAND avp-slam
 ```
-You will receive a `SHA256` line as output to confirm the completion of the command. This will now allow you to utilize the latest version of your docker image the next time you run it with the provided shell script. Failure to do this after you have made changes will force you to enact your changes all over again. If you have gotten to this point in the docker setup, commit your progress to your docker image at least once to ensure models to do not need to be loaded again.
+You will receive a `SHA256` line as output to confirm the completion of the command. This will now allow you to utilize the latest version of your docker image the next time you run it with the provided shell script. Failure to do this after you have made changes will force you to enact your changes all over again. If you have gotten to this point in the docker setup, commit your progress to your docker image at least once to ensure models too do not need to be loaded again.
 
 ### 1.3 **Load Gazebo Model** 
 Inside your docker image, run the following commands to load the models necessary for use in Gazebo.
