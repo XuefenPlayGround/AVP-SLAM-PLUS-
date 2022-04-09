@@ -166,6 +166,32 @@ def incrementalSolution(output,GT,Odom):
 
     return resultPoses
 
+def downSample(GT, Odom):
+
+    downSample_GT = []
+    downSample_Odom = []
+
+    for i in range(len(output[0])):
+        for j in range(len(GT[0])):
+            if output[0][i][0] == GT[0][j][0]:
+                downSample_GT.append(GT[0][j])
+                # GT_x.append(GT[0][j][1].x())
+                # GT_y.append(GT[0][j][1].y())
+                break
+
+        for k in range(len(Odom[0])):
+            if output[0][i][0] == Odom[0][k][0]:
+                downSample_Odom.append(Odom[0][k])
+                # Odom_x.append(Odom[0][k][1].x())
+                # Odom_y.append(Odom[0][k][1].y())
+                break
+
+    # downSample_GT.insert(0, (0,Pose2(0,0,0)))
+    downSample_Odom.insert(-1, (1447,Pose2(0,0,0)))
+    # del downSample_GT[-1]
+    # del downSample_Odom[-1]
+    return downSample_GT, downSample_Odom
+
 def calculateRMSE(x, y, GT_x, GT_y):
     return np.sum(np.sqrt((x - GT_x)**2 + (y - GT_y)**2))
 
@@ -263,6 +289,7 @@ if __name__ == "__main__":
     GT = readSE2(GTDir+fileName+'.g2o')
     Odom = readSE2(OdomDir+fileName+'.g2o')
     
+    # downSampled_GT, downSampled_Odom = downSample(GT, Odom)
 
     #part B
     batch_result = batchSolution(output,GT,Odom)
@@ -270,9 +297,10 @@ if __name__ == "__main__":
     #part C
     isam_result = incrementalSolution(output,GT,Odom)
 
+    plt.show()
+
     calculateError(batch_result, isam_result, GT, Odom, output[0])
 
-    plt.show()
     
     
     

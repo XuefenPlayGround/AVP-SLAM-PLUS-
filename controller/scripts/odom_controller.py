@@ -118,7 +118,7 @@ if __name__ == '__main__':
     x = 0.0
     y = 0.0
     yaw_angle = 0.0
-    rho = 0.0
+    rho = 2.0 # should be initialized bigger than Dist_tolerance to get in the first loop
 
     # parameters for orientation control
     # Ang_Dif = 10.0
