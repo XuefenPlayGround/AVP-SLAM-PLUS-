@@ -4,35 +4,6 @@ import math
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist 
 from nav_msgs.msg import Odometry
-pub = rospy.Publisher('/ideal_cmd_vel', Twist, queue_size=10)
-pub_Angle = rospy.Publisher('/Angle', Twist, queue_size=10)
-
-# initialize pose
-x = 0.0
-y = 0.0
-yaw_angle = 0.0
-rho = 10.0
-Ang_Dif = 10.0
-# parameters
-goal_x = [5, 5, 0 ,0]
-goal_y = [0, -5, -5, 3]
-# goal_theta = [0, 180, 0, -180]
-k_rho = 0.3
-k_alpha = -1.0 #1.0
-k_beta = -0.3
-Dist_tolerance = 0.1
-Ang_tolerance = 2.0
-
-Stop = Twist()
-Stop.linear.x = 0
-Stop.angular.z = 0
-VelLimit = 0.4
-rotLimit = math.pi/20.0
-phase_flag = 0
-
-x_0 = 0
-y_0 = 0
-first_flag = 0
 
 def Pose_callback(Odometry):
     global x
@@ -93,7 +64,7 @@ def control_command(point_index):
     delta_x = (goal_x[point_index] - x)
     delta_y = (goal_y[point_index] - y)
     theta = yaw_angle
-    global Ang_Dif
+    # global Ang_Dif
     # Ang_Dif = goal_theta[point_index] - theta
     global rho
     rho = math.sqrt(delta_x**2 + delta_y**2)
@@ -141,16 +112,50 @@ def ReachedGoal():
     global pub
     pub.publish(Stop)
 
-
-def start():
-    rospy.Subscriber("/odom", Odometry, Pose_callback)
-    rospy.Subscriber("/yaw_odom", PoseStamped, imu_callback)
+if __name__ == '__main__':
     
-    rospy.init_node('odom_controller')
-    rate = rospy.Rate(100) # 10hz
+    # initialize pose
+    x = 0.0
+    y = 0.0
+    yaw_angle = 0.0
+    rho = 0.0
+
+    # parameters for orientation control
+    # Ang_Dif = 10.0
+    # goal_theta = [0, 180, 0, -180]
+    
+    # parameters
+    goal_x = rospy.get_param("x_coordinate")
+    goal_y = rospy.get_param("y_coordinate")
+    k_rho = 0.3
+    k_alpha = -1.0 # 1.0
+    k_beta = -0.3
+    Dist_tolerance = 0.1
+    Ang_tolerance = 2.0
+
+    Stop = Twist()
+    Stop.linear.x = 0
+    Stop.angular.z = 0
+    VelLimit = 0.4
+    rotLimit = math.pi/20.0
+    phase_flag = 0
+
+    x_0 = 0
+    y_0 = 0
+    first_flag = 0
+    
     point_index = 0
     goal_flag = 0
-    global phase_flag
+
+
+    rospy.init_node('odom_controller', anonymous=True)
+    rospy.Subscriber("/odom", Odometry, Pose_callback)
+    rospy.Subscriber("/yaw_odom", PoseStamped, imu_callback)
+    pub = rospy.Publisher('/ideal_cmd_vel', Twist, queue_size=10)
+    pub_Angle = rospy.Publisher('/Angle', Twist, queue_size=10)
+    
+    rate = rospy.Rate(100) 
+
     while not rospy.is_shutdown():
         if goal_flag == 1:
             ReachedGoal()
@@ -165,6 +170,3 @@ def start():
         else:
             control_command(point_index)
         rate.sleep()
-
-if __name__ == '__main__':
-    start()

@@ -1,5 +1,5 @@
-fileName: "square_one_intersec"
-dataFile: "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/"
+fileName: "M_shape"
+dataFile: "/home/jacklee/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/"
 tooFar: 0.1
 ignoredClouds: 300
 
