@@ -38,7 +38,10 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
   - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
 
 ## Framework
-insert image here
+<p align='center'>
+<img src="images/our_pipeline.jpg" width = 55% height = 55% />
+<h5 align="center">AVP-SLAM++ Framework</h5>
+</p>
 
 ## Folder Structure
     .
