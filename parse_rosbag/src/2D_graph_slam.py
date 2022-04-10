@@ -1,10 +1,16 @@
 #! /usr/bin/env python3
 
+# Reads .g2o file formats from data/g2o, data/GT, and data/odometry in order to initialize
+# a factor graph and optimize it, plotting results, and printing errors.
+
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 from gtsam import NonlinearFactorGraph,PriorFactorPose2,noiseModel_Gaussian,noiseModel_Diagonal,Values,Pose2,GaussNewtonParams,GaussNewtonOptimizer,BetweenFactorPose2,ISAM2,ISAM2Params
 
+# read from .g2o assuming that it is in the correct format and only containing lines that start with
+# VERTEX_SE2 or EDGE_SE2. The first return is a list of vertexes (i,Pose2) and the second retur is
+# a list of edges (BetweenFactorPose2)
 def readSE2(file):
     vertex_SE2_list = []
     edge_SE2_list = []
@@ -53,6 +59,8 @@ def readSE2(file):
 
     return vertex_SE2_list, edge_SE2_list
 
+# batch solution using vertexes and edges from parse_rosbag.cpp
+# GT and Odom are only used for plotting as a comparion
 def batchSolution(output,GT,Odom):
     vertexes = output[0]
     edges = output[1]
@@ -107,6 +115,8 @@ def batchSolution(output,GT,Odom):
 
     return resultPoses
 
+# incremental solution using ISAM2 using vertexes and edges from parse_rosbag.cpp
+# GT and Odom are only used for plotting as a comparion
 def incrementalSolution(output,GT,Odom):
     vertexes = output[0]
     edges = output[1]
@@ -258,7 +268,7 @@ def calculateError(batch_result, isam_result, GT, Odom, SLAM):
 
 
 if __name__ == "__main__":
-    #part A
+    #Open the config file and read in all parameters
     with open('src/AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml','r') as stream:
         try:
             config = yaml.safe_load(stream)
@@ -275,18 +285,20 @@ if __name__ == "__main__":
         except yaml.YAMLError as exc:
             print(exc)
 
+    #the g2o file has the vertexes and poses to be used for optimization
     output = readSE2(dataDir+fileName+'.g2o')
     print('read',len(output[0]),'Vertexs and',len(output[1]),'edges')
 
+    #GT and odometry folders have vertexes only and are just used for comparison
     GT = readSE2(GTDir+fileName+'.g2o')
     Odom = readSE2(OdomDir+fileName+'.g2o')
     
     # downSampled_GT, downSampled_Odom = downSample(GT, Odom)
 
-    #part B
+    #find the optimized batch result
     batch_result = batchSolution(output,GT,Odom)
     
-    #part C
+    #find the optimized incremental result
     isam_result = incrementalSolution(output,GT,Odom)
 
     plt.show()
