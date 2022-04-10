@@ -122,6 +122,7 @@ SLAM
     roslaunch avp_slam_plus slamRGB.launch
 ```
 Localization
+
 If you previously ran SLAM and "save map", you can do localization in the prior map.
 ```
     roslaunch avp_slam_plus localizationRGB.launch
@@ -134,6 +135,7 @@ SLAM
     roslaunch avp_slam_plus slamRGBD.launch
 ```
 Localization
+                                         
 If you previously ran SLAM and "save map", you can do localization in the prior map.
 ```
     roslaunch avp_slam_plus localizationRGBD.launch
@@ -143,16 +145,16 @@ If you previously ran SLAM and "save map", you can do localization in the prior 
 Open a new terminl and follow these steps if you wish to optimize the trajectory offline.                   
 
 #### 3.3.1 **Recording Rosbag**
-'''
+```
     rosrun parse_rosbag record_rosbag.sh                                         
-'''                                         
+```                                         
 Once the rosbag is recording move the robot using a method from Robot Control and when that is done use Ctr+C on the rosbag recording
                                          
 #### 3.3.2 **Loop Closure Detection and Graph Optimization**
 The following script requires a rosbag name located in **AVP-SLAM-PLUS/parse_rosbag/data/rosbag/**. This is the default when recording rosbags so all you need to change is the "fileName" in **AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml**. Leave out the .bag in your file name.
-'''
+```
     rosrun parse_rosbag parse_plot.sh
-'''                                         
+```                                         
 In the output of this script you will see a print statement indicating how many loop closures were detected. It will also print the total number of vertexes and edges in your pose graph. A graph will show the following trajectories: AVP-SLAM-PLUS, optimized pose graph, ground truth, and odometry.
 
 ### 3.4 **Robot Control**
@@ -170,15 +172,15 @@ If you firstly control robot movement, you should ensure **robot_control.py** in
                                          
 #### 3.4.2 **Sequence of Commands**
 Perform a list of command inputs specified in the python script. Each input has an x velocity, rotational velocity, and time spend performing this command.                                        
-'''
+```
     rosrun robot_control robot_path.py
-'''
+```
                                          
 #### 3.4.3 **Path Following Controller**
 Command the robot to drive towards certain positions on the map. This is a globally aware controller that uses ground truth to ensure the robot follows the exact path set in **AVP-SLAM-PLUS/controller/config/configFile.yaml**.
-'''
+```
     roslaunch controller controller.launch                                     
-'''
+```
                                          
 ## 4.Acknowledgements
 We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
