@@ -1,8 +1,8 @@
-# AVP-SLAM-PLUS
+# AVP-SLAM++
 **Authors**: [Vivek Jaiswal](mailto:vjaiswal@umich.edu), [Harsh Jhaveri](mailto:hjhaveri@umich.edu), [Chun-Hsueh Lee](mailto:chunhlee@umich.edu), [Devin McCulley](mailto:devmccu@umich.edu)
-
 AVP-SLAM++ is an extension on the AVP-SLAM-PLUS repository initially implemented by [Liu Guitao](mailto:liuguitao@sia.cn). 
 
+## AVP-SLAM-PLUS Overview
 AVP-SLAM-PLUS is an implementation of [AVP-SLAM: Semantic Visual Mapping and Localization for Autonomous Vehicles in the Parking Lot (IROS 2020)](https://arxiv.org/abs/2007.01813) with some new contributions including:
 * The addition of a multi-RGBD camera mode. AVP-SLAM was initially only implmented with multiple RGB cameras
 * The addition of using normal distribution transformation (NDT) for localization. As published, AVP-SLAM uses iterative closest point (ICP).
@@ -28,6 +28,7 @@ The AVP-SLAM-PLUS code is simple and developed to be a good demonstrative exampl
 <h5 align="center">AVP-SLAM-PLUS Framework</h5>
 </p>
 
+## AVP-SLAM++ Overview
 During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent scaling and frames between Gazebo and RViz. Additionally, the performance of SLAM using the multi-RGBD mode was failure prone. While AVP-SLAM-PLUS consistently found a solution when run in multi-RGB mode, the trajectory resulting from SLAM tracked well initially, but was "scaled down" as time went on and was also not smooth overall. AVP-SLAM++ works to solve these problems with the following steps.
 - Implementing an odometry controller to produce simulated transformations between each subsequent pose
 - Extracting multi-RGB mode AVP-SLAM-PLUS poses
@@ -36,7 +37,6 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
   - Odometry transformations were used as edges
   - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
 
-# AVP-SLAM++
 ## Framework
 insert image here
 
