@@ -1,4 +1,4 @@
-# AVP-SLAM++
+# AVP-SLAM-PLUS
 **Authors**: [Vivek Jaiswal](mailto:vjaiswal@umich.edu), [Harsh Jhaveri](mailto:hjhaveri@umich.edu), [Chun-Hsueh Lee](mailto:chunhlee@umich.edu), [Devin McCulley](mailto:devmccu@umich.edu)
 
 AVP-SLAM++ is an extension on the AVP-SLAM-PLUS repository initially implemented by [Liu Guitao](mailto:liuguitao@sia.cn). 
@@ -35,6 +35,11 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
   - AVP-SLAM-PLUS poses were used as verticies
   - Odometry transformations were used as edges
   - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
+
+# AVP-SLAM++
+## Framework
+insert image here
+
 ## Folder Structure
     .
     ├── GraphSLAM                         # Python script to parse rosbag and generate graph
@@ -57,7 +62,7 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
 Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long as it supports `docker`.
 
 ### 1.2 Clone Repository and Docker Setup
-Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](BROKEN) for convenience.
+Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](https://drive.google.com/drive/folders/1uGGLLqDvklrvQkxCCnYLfekTPiSUEarH?usp=sharing) for convenience.
 
 In order to proceed with setup, you must have docker installed on your local system. For Ubuntu 20.04, follow Step 1 and 2 [here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-3-using-the-docker-command).
 
