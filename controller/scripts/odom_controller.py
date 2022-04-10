@@ -5,12 +5,20 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Twist 
 from nav_msgs.msg import Odometry
 
+
+'''
+A Path following controller that drive the robot to a given sequence of x and y coordinates
+'''
+
+
 def Pose_callback(Odometry):
+# call back function to get data from /odom topic
     global x
     global y
     global first_flag
     global x_0, y_0
 
+    # set the x and y to 0 when the controller starts
     if first_flag == 0:
         x_0 = Odometry.pose.pose.position.x
         y_0 = Odometry.pose.pose.position.y
@@ -20,6 +28,7 @@ def Pose_callback(Odometry):
     y = Odometry.pose.pose.position.y - y_0
 
 def imu_callback(orientation):
+# callback function to get current yaw angle
     global yaw_angle
     yaw_angle = orientation.pose.position.z
 
@@ -31,7 +40,6 @@ def vel_limit(vel_x):
 
 def rot_limit(vel_z):
     if vel_z < 0 and abs(vel_z) > rotLimit:
-        # print("Limited")
         return -rotLimit
     elif vel_z > 0 and abs(vel_z) > rotLimit:
         return rotLimit
@@ -78,6 +86,8 @@ def control_command(point_index):
     pub_Angle.publish(Angle)
 
     # beta = goal_theta[point_index] -theta - alpha
+
+    # wrap alpha between -pi and pi
     if abs(alpha) > abs(alpha + 360):
         alpha = alpha + 360
     elif abs(alpha - 360) < abs(alpha):
@@ -89,7 +99,9 @@ def control_command(point_index):
     Alpha = alpha
     alpha = alpha * math.pi/180
     # beta = beta * math.pi/180
-    global phase_flag
+
+    # Phase 0 -> rotating only, Phase 1 -> rotate and translate
+    global phase_flag 
     vel = Twist()
     if abs(Alpha) >= Ang_tolerance and phase_flag == 0:
         print("Phase 0")
@@ -161,7 +173,7 @@ if __name__ == '__main__':
             ReachedGoal()
             break
         elif rho <= Dist_tolerance and goal_flag == 0:
-            point_index += 1
+            point_index += 1 # increase the index to get the next coordinate
             phase_flag = 0
             if point_index == len(goal_x):
                 goal_flag = 1
