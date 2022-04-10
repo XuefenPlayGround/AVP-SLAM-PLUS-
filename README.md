@@ -188,12 +188,22 @@ Perform a list of command inputs specified in the python script. Each input has 
 ```
     rosrun robot_control robot_path.py
 ```
-                                         
+
+For the first time running **rosrun robot_control robot_path.py**, you should ensure **robot_path.py** in **AVP-SLAM-PLUS/simlate_gazebo/robot_control/** to be executable. You can do this command to let **robot_path.py** to be executable.
+```
+    chmod +777 robot_path.py
+```
+
 #### 3.4.3 **Path Following Controller**
 Command the robot to drive towards certain positions on the map. This is a globally aware controller that uses ground truth to ensure the robot follows the exact path set in **AVP-SLAM-PLUS/controller/config/configFile.yaml**.
 ```
     roslaunch controller controller.launch                                     
 ```
+For the first time running **roslaunch controller controller.launch**, you should ensure **odom_controller.py** in **AVP-SLAM-PLUS/controller/scripts/** to be executable. You can do this command to let **odom_controller.py** to be executable.
+```
+    chmod +777 odom_controller.py
+```
+
                                          
 ## 4.Acknowledgements
 We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
