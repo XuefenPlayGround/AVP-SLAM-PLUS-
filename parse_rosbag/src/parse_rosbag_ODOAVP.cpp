@@ -69,6 +69,7 @@ int main(int argc, char *argv[]){
     std::vector<double> slamTheta;
 
     int vertexCount = 0;
+    bool GT_first = false; //store GT before SLAM pose so the id would start at 0 
 
     for(rosbag::MessageInstance const m: rosbag::View(bag))
     {
@@ -118,7 +119,7 @@ int main(int argc, char *argv[]){
         }
 
         nav_msgs::Odometry::ConstPtr odom = m.instantiate<nav_msgs::Odometry>();
-        if (odom != nullptr && topic=="/currentPose"){
+        if (odom != nullptr && topic=="/currentPose" && GT_first == true){
         //     nav_msgs::Odometry odom_msg = odom->data;
             
             double roll, pitch, yaw;
@@ -150,7 +151,7 @@ int main(int argc, char *argv[]){
             tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
 
             GTfile << "VERTEX_SE2 " << vertexCount << " " << odom->pose.pose.position.x << " " << odom->pose.pose.position.y << " " << yaw << std::endl;
-            
+            GT_first = true;
         }
     }
 
