@@ -47,11 +47,10 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
     │   ├── scripts
     │   └── src
     ├── controller                        # Script to automate trajectory generation in Gazebo
-    ├── convert_orientation               # 
-    ├── data_analysis                     # 
-    ├── images
-    ├── parse_rosbag
-    ├── simulate_gazebo
+    ├── convert_orientation               # utility scripts for angle conversions
+    ├── images                            
+    ├── parse_rosbag                      # record a rosbag, find loop closures, optimize, and view results
+    ├── simulate_gazebo                   # source code creating simulation and manual robot control
     └── README.md
 ## 1. Prerequisites
 ### 1.1 Operating System Basics
@@ -106,21 +105,43 @@ Depending on how you have configured your docker paths, the first path may be sl
 ```
 
 ## 3. RUN Example
-### 3.1  **RGB Mode**
                   
-#### **save map**
+### 3.1 **save map**
 
 if you want to save map and use the map to do localization, you should ensure your config file have be correctely set. The config file is at   **AVP-SLAM-PLUS/avp_slam_plus/configFile.yaml**
 
 ```
     mapSave: true
     mapSaveLocation: your map file address 
-```                 
+```    
+### 3.2  **Launching AVP-SLAM-PLUS**            
                   
-#### 3.1.1  **Mapping**
+#### 3.2.1  **RGB Mode**
+SLAM
 ```
     roslaunch avp_slam_plus slamRGB.launch
 ```
+Localization
+If you previously ran SLAM and "save map", you can do localization in the prior map.
+```
+    roslaunch avp_slam_plus localizationRGB.launch
+```
+
+
+#### 3.2.2  **RGBD Mode**                                                
+SLAM
+```
+    roslaunch avp_slam_plus slamRGBD.launch
+```
+Localization
+If you previously ran SLAM and "save map", you can do localization in the prior map.
+```
+    roslaunch avp_slam_plus localizationRGBD.launch
+```
+
+### 3.3 **Pose Graph Optimization**
+                                         
+### 3.4 **Robot Control**
 
 open a new terminal, control robot move. 
 ```
@@ -131,51 +152,6 @@ if you firstly control robot move, you should ensure **robot_control.py** in **A
     chmod +777 robot_control.py
 ```                 
 
-#### 3.1.2  **Localization**
-if you have do 3.1.1 and "save map", you can do localization in the prior map.
-```
-    roslaunch avp_slam_plus localizationRGB.launch
-```
-
-
-open a new terminal, control robot move
-```
-    roslaunch robot_control robot_control.launch
-```
-
-### 3.2  **RGBD Mode**
- 
-#### **save map**
-
-if you want to save map and use the map to do localization, you should ensure your config file have be correctely set. The config file is at   **AVP-SLAM-PLUS-main/avp_slam_plus/configFile.yaml**
-```
-    mapSave: true
-    mapSaveLocation: your map file address 
-```   
-                               
-                               
-#### 3.2.1  **Mapping**
-```
-    roslaunch avp_slam_plus slamRGBD.launch
-```
-
-open a new terminal, control robot move
-```
-    roslaunch robot_control robot_control.launch
-```
-
-
-#### 3.2.2  **Localization**
-if you have do 3.2.1 and "save map", you can do localization in the prior map.
-
-```
-    roslaunch avp_slam_plus localizationRGBD.launch
-```
-
-open a new terminal, control robot move
-```
-    roslaunch robot_control robot_control.launch
-```
 
 ## 4.Acknowledgements
 We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
