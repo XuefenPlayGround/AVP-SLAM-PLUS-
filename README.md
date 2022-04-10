@@ -35,7 +35,24 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
   - AVP-SLAM-PLUS poses were used as verticies
   - Odometry transformations were used as edges
   - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
-
+## Folder Structure
+    .
+    ├── GraphSLAM                         # Python script to parse rosbag and generate graph
+    ├── avp_slam_plus                     # source code
+    │   ├── config
+    │   ├── data
+    │   ├── include
+    │   ├── launch
+    │   ├── model
+    │   ├── scripts
+    │   └── src
+    ├── controller                        # Script to automate trajectory generation in Gazebo
+    ├── convert_orientation               # 
+    ├── data_analysis                     # 
+    ├── images
+    ├── parse_rosbag
+    ├── simulate_gazebo
+    └── README.md
 ## 1. Prerequisites
 ### 1.1 Operating System Basics
 Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long as it supports `docker`.
