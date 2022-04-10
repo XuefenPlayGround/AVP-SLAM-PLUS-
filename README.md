@@ -115,7 +115,8 @@ If you want to save map and use the map to do localization, you should ensure yo
     mapSaveLocation: your map file address 
 ```    
 ### 3.2  **Launching AVP-SLAM-PLUS**            
-First choose a camera mode and launch the environment with one of the following options.                  
+First choose a camera mode and launch the environment with one of the following options.
+
 #### 3.2.1  **RGB Mode**
 SLAM
 ```
@@ -148,14 +149,26 @@ Open a new terminl and follow these steps if you wish to optimize the trajectory
 ```
     rosrun parse_rosbag record_rosbag.sh                                         
 ```                                         
-Once the rosbag is recording move the robot using a method from Robot Control and when that is done use Ctr+C on the rosbag recording
-                                         
+Once the rosbag is recording move the robot using a method from Robot Control and when that is done use Ctr+C on the rosbag recording.
+
+If you firstly record rosbag, you should ensure **record_rosbag.sh** in **AVP-SLAM-PLUS/parse_rosbag/launch/** to be executable. You can do this command to let **record_rosbag.sh** to be executable.		
+
+```
+    chmod +777 record_rosbag.sh
+``` 
+										 
 #### 3.3.2 **Loop Closure Detection and Graph Optimization**
 The following script requires a rosbag name located in AVP-SLAM-PLUS/parse_rosbag/data/rosbag/. This is the default when recording rosbags so all you need to change is the "fileName" in AVP-SLAM-PLUS/parse_rosbag/config/configFile.yaml. Leave out the .bag in your file name.
 ```
     rosrun parse_rosbag parse_plot.sh
 ```                                         
 In the output of this script you will see a print statement indicating how many loop closures were detected. It will also print the total number of vertexes and edges in your pose graph. A graph will show the following trajectories: AVP-SLAM-PLUS, optimized pose graph, ground truth, and odometry. Finally it will print the root mean squared error for each trajectory.
+
+If you run **parse_plot.sh**, you should ensure **parse_plot.sh** in **AVP-SLAM-PLUS/parse_rosbag/launch/** to be executable. You can do this command to let **parse_plot.sh** to be executable.		
+
+```
+    chmod +777 parse_plot.sh
+``` 
 
 ### 3.4 **Robot Control**
 Choose one of the following options to move the robot in the simulation once you have launched AVP-SLAM-PLUS.
