@@ -16,6 +16,10 @@
     <!-- run odometry -->
     <node name="Odometry" pkg="avp_slam_plus" type="Odometry.py" output="screen">
    </node>
+   
+   <!-- convert qt to rpy -->
+    <node name="qt" pkg="convert_orientation" type="qt" output="screen">
+   </node>
   
 
 </launch>
