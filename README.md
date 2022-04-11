@@ -174,13 +174,13 @@ The following script requires a rosbag name located in AVP-SLAM-PLUS/parse_rosba
 ```                                         
 In the output of this script you will see a print statement indicating how many loop closures were detected. It will also print the total number of vertexes and edges in your pose graph. A graph will show the following trajectories: AVP-SLAM-PLUS, optimized pose graph, ground truth, and odometry. Finally it will print the root mean squared error for each trajectory.
 
-If you run **parse_plot.sh**, you should ensure **parse_plot.sh** in **AVP-SLAM-PLUS/parse_rosbag/launch/** to be executable. You can do this command to let **parse_plot.sh** to be executable.		
+If it is the first time you run `parse_plot.sh`, you should ensure `parse_plot.sh` in `AVP-SLAM-PLUS/parse_rosbag/launch/` to be executable. You can do this command to let **parse_plot.sh** to be executable.		
 
 ```
     chmod +777 parse_plot.sh
 ``` 
 
-After running **rosrun parse_rosbag parse_plot.sh**, you should see result similar to these figures.
+After running `rosrun parse_rosbag parse_plot.sh`, you should see result similar to these figures.
 
 <p align='center'>
 <img src="images/8x8sqaure_batch.png"  width = 45% height = 40% " />
@@ -196,7 +196,7 @@ Open a new terminal and control robot movement using keyboard input following th
 ```
     roslaunch robot_control robot_control.launch
 ```
-If you firstly control robot movement, you should ensure **robot_control.py** in **AVP-SLAM-PLUS/simlate_gazebo/robot_control/** to be executable. You can do this command to let **robot_control.py** to be executable.
+If you firstly control robot movement, you should ensure `robot_control.py` in `AVP-SLAM-PLUS/simlate_gazebo/robot_control/` to be executable. You can do this command to let `robot_control.py` to be executable.
 ```
     chmod +777 robot_control.py
 ```    
@@ -207,17 +207,17 @@ Perform a list of command inputs specified in the python script. Each input has 
     rosrun robot_control robot_path.py
 ```
 
-For the first time running **rosrun robot_control robot_path.py**, you should ensure **robot_path.py** in **AVP-SLAM-PLUS/simlate_gazebo/robot_control/** to be executable. You can do this command to let **robot_path.py** to be executable.
+For the first time running `rosrun robot_control robot_path.py`, you should ensure `robot_path.py` in `AVP-SLAM-PLUS/simlate_gazebo/robot_control/` to be executable. You can do this command to let `robot_path.py` to be executable.
 ```
     chmod +777 robot_path.py
 ```
 
 #### 3.4.3 **Path Following Controller**
-Command the robot to drive towards certain positions on the map. This is a globally aware controller that uses ground truth to ensure the robot follows the exact path set in **AVP-SLAM-PLUS/controller/config/configFile.yaml**.
+Command the robot to drive towards certain positions on the map. This is a globally aware controller that uses ground truth to ensure the robot follows the exact path set in `AVP-SLAM-PLUS/controller/config/configFile.yaml`.
 ```
     roslaunch controller controller.launch                                     
 ```
-For the first time running **roslaunch controller controller.launch**, you should ensure **odom_controller.py** in **AVP-SLAM-PLUS/controller/scripts/** to be executable. You can do this command to let **odom_controller.py** to be executable.
+For the first time running `roslaunch controller controller.launch`, you should ensure `odom_controller.py` in `AVP-SLAM-PLUS/controller/scripts/` to be executable. You can do this command to let `odom_controller.py` to be executable.
 ```
     chmod +777 odom_controller.py
 ```
