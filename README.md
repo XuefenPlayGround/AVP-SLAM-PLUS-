@@ -151,7 +151,9 @@ If you previously ran SLAM and "save map", you can do localization in the prior 
 ```
 
 ### 3.3 **Pose Graph Optimization**
-Open a new terminl and follow these steps if you wish to optimize the trajectory offline.                   
+Open a new terminl and follow these steps if you wish to optimize the trajectory offline.
+
+You should run all the .sh file under **/catkin_ws**
 
 #### 3.3.1 **Recording Rosbag**
 ```
@@ -177,6 +179,14 @@ If you run **parse_plot.sh**, you should ensure **parse_plot.sh** in **AVP-SLAM-
 ```
     chmod +777 parse_plot.sh
 ``` 
+
+After running **rosrun parse_rosbag parse_plot.sh**, you should see result similar to these figures.
+
+<p align='center'>
+<img src="images/8x8sqaure_batch.png"  width = 45% height = 40% " />
+<img src="images/8x8sqaure_isam.png" width = 45% height = 40% />
+<h5 align="center">Graph Optimization</h5>
+</p>
 
 ### 3.4 **Robot Control**
 Choose one of the following options to move the robot in the simulation once you have launched AVP-SLAM-PLUS.
