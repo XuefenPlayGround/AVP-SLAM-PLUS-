@@ -1,7 +1,7 @@
 fileName: "8x8_sq"
 dataFile: "/home/catkin_ws/src/AVP-SLAM-PLUS/parse_rosbag/data/"
 tooFar: 0.1
-ignoredClouds: 300
+ignoredVertexes: 300
 
 # Iniital guess for Factor Graph
 initialPose: [0,0,0]

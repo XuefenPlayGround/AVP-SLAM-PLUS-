@@ -1,8 +1,8 @@
 # AVP-SLAM++
 **Authors**: [Vivek Jaiswal](mailto:vjaiswal@umich.edu), [Harsh Jhaveri](mailto:hjhaveri@umich.edu), [Chun-Hsueh Lee](mailto:chunhlee@umich.edu), [Devin McCulley](mailto:devmccu@umich.edu)
-
 AVP-SLAM++ is an extension on the AVP-SLAM-PLUS repository initially implemented by [Liu Guitao](mailto:liuguitao@sia.cn). 
 
+## AVP-SLAM-PLUS Overview
 AVP-SLAM-PLUS is an implementation of [AVP-SLAM: Semantic Visual Mapping and Localization for Autonomous Vehicles in the Parking Lot (IROS 2020)](https://arxiv.org/abs/2007.01813) with some new contributions including:
 * The addition of a multi-RGBD camera mode. AVP-SLAM was initially only implmented with multiple RGB cameras
 * The addition of using normal distribution transformation (NDT) for localization. As published, AVP-SLAM uses iterative closest point (ICP).
@@ -28,6 +28,7 @@ The AVP-SLAM-PLUS code is simple and developed to be a good demonstrative exampl
 <h5 align="center">AVP-SLAM-PLUS Framework</h5>
 </p>
 
+## AVP-SLAM++ Overview
 During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent scaling and frames between Gazebo and RViz. Additionally, the performance of SLAM using the multi-RGBD mode was failure prone. While AVP-SLAM-PLUS consistently found a solution when run in multi-RGB mode, the trajectory resulting from SLAM tracked well initially, but was "scaled down" as time went on and was also not smooth overall. AVP-SLAM++ works to solve these problems with the following steps.
 - Implementing an odometry controller to produce simulated transformations between each subsequent pose
 - Extracting multi-RGB mode AVP-SLAM-PLUS poses
@@ -35,6 +36,13 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
   - AVP-SLAM-PLUS poses were used as verticies
   - Odometry transformations were used as edges
   - Loop closures were found using the distance between two AVP-SLAM-PLUS poses. These poses are already localized using either ICP or NDT, and thus, loop closure is found if two poses are within a threshold distance of each other. In order to not produce loop closure constraints between neighboring (or truly close points), 300 neighboring poses were ignored for this comparison. 300 was found using tuning
+
+## Framework
+<p align='center'>
+<img src="images/our_pipeline.jpg" width = 60% height = 60% />
+<h5 align="center">AVP-SLAM++ Framework</h5>
+</p>
+
 ## Folder Structure
     .
     ├── GraphSLAM                         # Python script to parse rosbag and generate graph
@@ -57,7 +65,7 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
 Ubuntu 64-bit. The version of your kernel (18.04, 20.04, etc.) does not matter as long as it supports `docker`.
 
 ### 1.2 Clone Repository and Docker Setup
-Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](BROKEN) for convenience.
+Running this environment locally on an Ubuntu system may lead to issues. We have provided a [docker image and shell script](https://drive.google.com/drive/folders/1uGGLLqDvklrvQkxCCnYLfekTPiSUEarH?usp=sharing) for convenience.
 
 In order to proceed with setup, you must have docker installed on your local system. For Ubuntu 20.04, follow Step 1 and 2 [here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04#step-3-using-the-docker-command).
 
