@@ -39,7 +39,7 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
 
 ## Framework
 <p align='center'>
-<img src="images/our_pipeline.jpg" width = 55% height = 55% />
+<img src="images/our_pipeline.jpg" width = 60% height = 60% />
 <h5 align="center">AVP-SLAM++ Framework</h5>
 </p>
 
