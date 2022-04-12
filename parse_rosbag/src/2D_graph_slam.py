@@ -195,7 +195,7 @@ def downSample(GT, Odom):
     return downSample_GT, downSample_Odom
 
 def calculateRMSE(x, y, GT_x, GT_y):
-    return np.sum(np.sqrt((x - GT_x)**2 + (y - GT_y)**2))
+    return np.sqrt(np.mean((x - GT_x)**2 + (y - GT_y)**2))
 
 def calculateError(batch_result, isam_result, GT, Odom, SLAM):
     # pick out GT and Odom that matches the result in timestamp
