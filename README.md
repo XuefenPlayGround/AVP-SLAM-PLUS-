@@ -224,7 +224,7 @@ For the first time running `roslaunch controller controller.launch`, you should 
 ```
 
 ## 4. Detailed Methodology and Experimental Results
-For more details in how the project was implemented, see [here](https://github.com/rob530-w22-team25/AVP-SLAM-PLUS/blob/main/pdf/AVP_SLAM_PLUSPLUS_ROB530_FinalPaper_Team25.pdf). 
+For more details on how the project was implemented, see [here](https://github.com/rob530-w22-team25/AVP-SLAM-PLUS/blob/main/pdf/AVP_SLAM_PLUSPLUS_ROB530_FinalPaper_Team25.pdf). 
                                          
 ## 5. Acknowledgements
 We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
