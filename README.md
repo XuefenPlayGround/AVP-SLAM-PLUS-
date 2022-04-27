@@ -56,7 +56,8 @@ During initial testing, AVP-SLAM-PLUS produced a trajectory with inconsistent sc
     │   └── src
     ├── controller                        # Script to automate trajectory generation in Gazebo
     ├── convert_orientation               # utility scripts for angle conversions
-    ├── images                            
+    ├── images
+    ├── pdf				  # PDF file for detailed experimental results and methodology
     ├── parse_rosbag                      # record a rosbag, find loop closures, optimize, and view results
     ├── simulate_gazebo                   # source code creating simulation and manual robot control
     └── README.md
@@ -222,8 +223,10 @@ For the first time running `roslaunch controller controller.launch`, you should 
     chmod +777 odom_controller.py
 ```
 
+## 4. Detailed Methodology and Experimental Results
+For more details in how the project was implemented, see [here](https://github.com/rob530-w22-team25/AVP-SLAM-PLUS/blob/main/pdf/AVP_SLAM_PLUSPLUS_ROB530_FinalPaper_Team25.pdf). 
                                          
-## 4.Acknowledgements
+## 5. Acknowledgements
 We'd like to thank the original AVP-SLAM team, Tong Qin, Tongqing Chen, Yilun Chen, and Qing Su. Additionally, we would also like to acknowledge the precusory work done by [TurtleZhong](https://github.com/TurtleZhong/AVP-SLAM-SIM) who first developed an initial simulation environment for AVP-SLAM and by [huchunxu](https://github.com/huchunxu/ros_exploring) who developed an intutive simulated robot model. Addtionally, a big thanks to [Liu Guitao](mailto:liuguitao@sia.cn) who originally developed AVP-SLAM-PLUS. The original implementation of AVP-SLAM-PLUS can be found [here](https://github.com/liuguitao/AVP-SLAM-PLUS).
 
 Additionally, we would like to acknowledge and give a big thanks to the W22 instructional team of [NAVARCH 568/ROB 530 Mobile Robotics](https://robots.engin.umich.edu/mobilerobotics/) for their teaching and continual support throughout this entire process. We appreciated the effort and the learning opportunity.
